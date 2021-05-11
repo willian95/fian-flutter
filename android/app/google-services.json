@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "918479603920",
+    "project_id": "fian-28fa5",
+    "storage_bucket": "fian-28fa5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918479603920:android:90401c1a2951d9aab376d5",
+        "android_client_info": {
+          "package_name": "com.example.fian"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "918479603920-kunlbahadm8gqcbirv54vlurg1mr4b4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBBdG-YTE43NhIW8Wzj9fwwMzULvB4LlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "918479603920-kunlbahadm8gqcbirv54vlurg1mr4b4n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
