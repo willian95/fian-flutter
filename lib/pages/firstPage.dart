@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:async';
 import 'package:date_util/date_util.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:geolocator/geolocator.dart';
 
 final storage = new LocalStorage('events.json');
 
@@ -29,6 +29,8 @@ class _FirstPageState extends State<FirstPage> {
   int currentMonth = 0;
   int currentYear = 0;
   int currentDay = 0;
+  String mainWeather = "";
+
 
   @override
   void initState(){
@@ -42,11 +44,11 @@ class _FirstPageState extends State<FirstPage> {
 
     
     checkForLocalStorageExistence(this.currentYear, this.currentMonth, this.currentDay, "now", true, true);
+    climateAPI();
     
 
-    
+
   }
-
 
   checkForLocalStorageExistence(year, month, day, time, setCurrentTime, showLoading) async{
     
@@ -149,10 +151,135 @@ class _FirstPageState extends State<FirstPage> {
       
   } 
 
-  getApiWeather(){
+  climateAPI(){
+    _determinePosition();
+  }
+  
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-    //var data = await http.get('https://fian.sytes.net/api/events'+"/"+month.toString()+"/"+year.toString());
-    //var newEvents = json.decode(data.body);
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        AlertDialog alert = AlertDialog(
+          title: Text("El acceso al GPS ha sido rechazado, por lo tanto no se podrá actualizar el clima")
+        );
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return alert;
+          },
+        );
+        return Future.error('Location permissions are denied');
+      }
+    }
+    
+    if (permission == LocationPermission.deniedForever) {
+      
+      AlertDialog alert = AlertDialog(
+        title: Text("El acceso al GPS ha sido rechazado para siempre")
+      );
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+       
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.');
+    } 
+
+    var location = await Geolocator.getCurrentPosition();
+    weatherAPICall(location);
+    
+  }
+
+  setWeather(year, month, day) async{
+
+    await storage.ready;
+    var weather = await storage.getItem("weather");
+
+    var tempDay = "";
+    var tempMonth = "";
+
+    if(day < 10){
+      tempDay = "0"+day.toString();
+    }else{
+      tempDay = day.toString();
+    }
+
+    if(month < 10){
+      tempMonth = "0"+month.toString();
+    }else{
+      tempMonth = month.toString();
+    }
+
+    setState((){
+            
+        mainWeather = "";
+
+      });
+
+    if(this.currentDay == day && this.currentMonth == month && this.currentYear == year){
+      setState((){
+            
+        mainWeather = weather[0]["weather"][0]["main"];
+
+      });
+    }else{
+ 
+      for(var i = 0; i < weather.length; i++){
+
+        if(weather[i]["dt_txt"].toString().substring(0, 10) == year.toString()+"-"+tempMonth+"-"+tempDay){
+          
+          if(weather[i]["dt_txt"].toString().contains("12:")){
+
+            setState((){
+              
+              mainWeather = weather[i]["weather"][0]["main"];
+
+            });
+            
+
+          }
+
+        }
+
+      }
+
+    }
+    
+    print(mainWeather);
+
+  }
+
+  weatherAPICall(location) async{
+
+    var data = await http.get("http://api.openweathermap.org/data/2.5/forecast?lat="+location.latitude.toString()+"&lon="+location.longitude.toString()+"&appid=d816b2362dc0ff9fc94670863e1505d9");
+    var weatherData = json.decode(data.body);
+    
+    await storage.ready;
+    await storage.setItem("weather", weatherData["list"]);
+
+    setState((){
+      mainWeather = weatherData["list"][0]["weather"][0]["main"];
+    });
+
+   
+        
+
+
 
   }
 
@@ -249,6 +376,82 @@ class _FirstPageState extends State<FirstPage> {
 
   }
 
+
+  showActivityModal(id, title, description, best_season){
+
+      showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:BorderRadius.circular(20.0)),
+            child: Container(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                          child: Image.asset(
+                            "images/icon"+id.toString()+".png", width: 90, height: 90.0,
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
+                          child: Text(
+                            title,
+                            overflow: TextOverflow.fade,
+                            maxLines: 10,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
+                          ),
+                        ),
+
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Text(
+                            description,
+                            maxLines: 10,
+                            textAlign: TextAlign.justify,
+                            textDirection: TextDirection.ltr,
+                          ),
+                          
+                        ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                          child: Image.asset(
+                            "images/llena.png", width: 40, height: 40.0,
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                          child:Text(
+                            best_season,
+                            maxLines: 10,
+                            textAlign: TextAlign.justify
+                          )
+                          
+                        )
+
+                      ]
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+    });
+                                                
+                                                
+
+  }
+
   Widget _buildNewTransition(
     BuildContext context,
     Animation<double> animation,
@@ -277,225 +480,251 @@ class _FirstPageState extends State<FirstPage> {
     },
   );
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomPaint(
         painter: BluePainter(),
-        child: ListView(
+        child: Stack(
+        children: [
 
-          children: [
+          SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: this.mainWeather != "" ? (Image.asset("images/"+this.mainWeather+".gif")) : Text("")
+            )
+          ),
 
-            this.loading == true ? (
-              Center(child: CircularProgressIndicator())
-            ) : (
-              events.length == 0 ? (
-                 Center(
-                   child: Column(
-                     children:[
-                       Image.asset("images/sad.png", width: 60, height: 60),
-                       Text("Aún no hay actividades, revisa tu conexión a internet")
-                     ]
-                   )
-                  )
+          ListView(
+
+            children: [
+
+              this.loading == true ? (
+                Center(child: CircularProgressIndicator())
               ) : (
+                events.length == 0 ? (
+                   Center(
+                     child: Column(
+                       children:[
+                         Image.asset("images/sad.png", width: 60, height: 60),
+                         Text("Aún no hay actividades, revisa tu conexión a internet")
+                       ]
+                     )
+                    )
+                ) : (
 
-                Container(
-                child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                
-                children: <Widget>[
-
-                    new CarouselSlider(
-                      carouselController: _buttonCarouselController,
-                      options: CarouselOptions(
-                        height: 100,
-                        viewportFraction: 0.8,
-                        initialPage: 0,
-                        enableInfiniteScroll: false,
-                        reverse: false,
-                        autoPlay: false,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enlargeCenterPage: true,
-                        scrollDirection: Axis.horizontal,
-                        onPageChanged: (index, reason){
-                          if(reason == CarouselPageChangedReason.manual){
-                            _buttonCarouselController.animateToPage(this.moonPhaseIndex);
-                          }
-                        }
-                      ),
-                      items: moonPhases.map((data) {
-                        
-                        return Container(
-                          child: Column(
-                            children: [
-                              Image.asset("images/"+data+".png", width: 60.0, height: 60.0),
-                              Center(
-                                child: Text("Luna "+data, style: TextStyle(fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        );
-                        
-                      }).toList(),
-                    ),
-
+                  Container(
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   
-                    new CarouselSlider(
-                      carouselController: _eventCarouselController,
-                      options: CarouselOptions(
-                        height: MediaQuery.of(context).size.height *0.7,
-                        aspectRatio: 16/9,
-                        viewportFraction: 0.8,
-                        initialPage: 0,
-                        enableInfiniteScroll: false,
-                        reverse: false,
-                        autoPlay: false,
-                        autoPlayInterval: Duration(seconds: 3),
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enlargeCenterPage: true,
-                        scrollDirection: Axis.horizontal,
-                        onPageChanged: (index, reason) {
+                  children: <Widget>[
 
-                          setState(() {
-                            
-                            var moonPhase = this.events[index]["moon_phase"];
-                            var moonPhaseIndex = this.moonPhases.indexOf(moonPhase);
-                            this.moonPhaseIndex = moonPhaseIndex;
-
-                            _buttonCarouselController.animateToPage(moonPhaseIndex);
-
-                            
-                          
-                          });
-
-                          var indexDay = int.parse(this.events[index]["date"].toString().substring(8, 10));
-                          var indexMonth = int.parse(this.events[index]["date"].toString().substring(5, 7));
-                          var indexYear = int.parse(this.events[index]["date"].toString().substring(0, 4));
-                          var indexDate = new DateTime(indexYear, indexMonth, 7);
-
-                          var dateUtility = DateUtil();
-                          var lastDay = dateUtility.daysInMonth(indexDate.month, indexDate.year);
-                          
-                          if(reason == CarouselPageChangedReason.manual){
-                            if(indexDay < 2){
-                                
-                              AlertDialog alert = AlertDialog(
-                                title: Text("¿Desea cargar el mes anterior?"),
-                                actions: [
-                                  TextButton(
-                                    child: Text("No, cancelar"),
-                                    onPressed:  () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: Text("Sí, cargar"),
-                                    onPressed:  () {
-
-                                      var newDate = new DateTime(indexYear, indexMonth - 1, 7);
-                                      checkForLocalStorageExistence(newDate.year, newDate.month, newDate.day, "old", true, false);
-                                      Navigator.pop(context);
-
-                                    },
-                                  ),
-                                ],
-                              );
-
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return alert;
-                                },
-                              );
-
+                      new CarouselSlider(
+                        carouselController: _buttonCarouselController,
+                          options: CarouselOptions(
+                            height: 100,
+                            viewportFraction: 0.8,
+                            initialPage: 0,
+                            enableInfiniteScroll: false,
+                            reverse: false,
+                            autoPlay: false,
+                            autoPlayCurve: Curves.fastOutSlowIn,
+                            enlargeCenterPage: true,
+                            scrollDirection: Axis.horizontal,
+                            onPageChanged: (index, reason){
+                              if(reason == CarouselPageChangedReason.manual){
+                                _buttonCarouselController.animateToPage(this.moonPhaseIndex);
+                              }
                             }
-
-                            else if(indexDay == lastDay){
-                              
-                              AlertDialog alert = AlertDialog(
-                                title: Text("¿Desea cargar el mes siguiente?"),
-                                actions: [
-                                  TextButton(
-                                    child: Text("No, cancelar"),
-                                    onPressed:  () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: Text("Sí, cargar"),
-                                    onPressed:  () {
-
-                                      var newDate = new DateTime(indexYear, indexMonth + 1, 7);
-                                      checkForLocalStorageExistence(newDate.year, newDate.month, newDate.day, "old", true, false);
-                                      Navigator.pop(context);
-
-                                    },
-                                  ),
-                                ],
-                              );
-
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return alert;
-                                },
-                              );
-                              
-
-                            }
-                          }
-
-                        }
-                      ),
-                      items: events.map((data) {
-                        
-                        return Builder(
-                          builder: (BuildContext context) {
+                          ),
+                          items: moonPhases.map((data) {
+                            
                             return Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin: EdgeInsets.symmetric(horizontal: 9.0, vertical: 5.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: Offset(1, 3), // changes position of shadow
-                                  ),
-                                ]
+                              child: Column(
+                                children: [
+                                  Image.asset("images/"+data+".png", width: 60.0, height: 60.0),
+                                  Center(
+                                    child: Text("Luna "+data, style: TextStyle(fontWeight: FontWeight.bold)),
+                                  )
+                                ],
                               ),
-                              child: GestureDetector(
-                                child:Column(
+                            );
+                            
+                          }).toList(),
+                      ),
+
+                    
+                      new CarouselSlider(
+                        carouselController: _eventCarouselController,
+                        options: CarouselOptions(
+                          height: MediaQuery.of(context).size.height *0.7,
+                          aspectRatio: 16/9,
+                          viewportFraction: 0.8,
+                          initialPage: 0,
+                          enableInfiniteScroll: false,
+                          reverse: false,
+                          autoPlay: false,
+                          autoPlayInterval: Duration(seconds: 3),
+                          autoPlayAnimationDuration: Duration(milliseconds: 800),
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          enlargeCenterPage: true,
+                          scrollDirection: Axis.horizontal,
+                          onPageChanged: (index, reason) {
+
+                            setState(() {
+                              
+                              var moonPhase = this.events[index]["moon_phase"];
+                              var moonPhaseIndex = this.moonPhases.indexOf(moonPhase);
+                              this.moonPhaseIndex = moonPhaseIndex;
+
+                              _buttonCarouselController.animateToPage(moonPhaseIndex);
+
+                              
+                            
+                            });
+
+                            var indexDay = int.parse(this.events[index]["date"].toString().substring(8, 10));
+                            var indexMonth = int.parse(this.events[index]["date"].toString().substring(5, 7));
+                            var indexYear = int.parse(this.events[index]["date"].toString().substring(0, 4));
+                            var indexDate = new DateTime(indexYear, indexMonth, 7);
+
+                            setWeather(indexYear, indexMonth, indexDay);
+
+                            var dateUtility = DateUtil();
+                            var lastDay = dateUtility.daysInMonth(indexDate.month, indexDate.year);
+                            
+                            if(reason == CarouselPageChangedReason.manual){
+                              if(indexDay < 2){
+                                  
+                                AlertDialog alert = AlertDialog(
+                                  title: Text("¿Desea cargar el mes anterior?"),
+                                  actions: [
+                                    TextButton(
+                                      child: Text("No, cancelar"),
+                                      onPressed:  () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text("Sí, cargar"),
+                                      onPressed:  () {
+
+                                        var newDate = new DateTime(indexYear, indexMonth - 1, 7);
+                                        checkForLocalStorageExistence(newDate.year, newDate.month, newDate.day, "old", true, false);
+                                        Navigator.pop(context);
+
+                                      },
+                                    ),
+                                  ],
+                                );
+
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return alert;
+                                  },
+                                );
+
+                              }
+
+                              else if(indexDay == lastDay){
+                                
+                                AlertDialog alert = AlertDialog(
+                                  title: Text("¿Desea cargar el mes siguiente?"),
+                                  actions: [
+                                    TextButton(
+                                      child: Text("No, cancelar"),
+                                      onPressed:  () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text("Sí, cargar"),
+                                      onPressed:  () {
+
+                                        var newDate = new DateTime(indexYear, indexMonth + 1, 7);
+                                        checkForLocalStorageExistence(newDate.year, newDate.month, newDate.day, "old", true, false);
+                                        Navigator.pop(context);
+
+                                      },
+                                    ),
+                                  ],
+                                );
+
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return alert;
+                                  },
+                                );
+                                
+
+                              }
+                            }
+
+                          }
+                        ),
+                        items: events.map((data) {
+                          
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: EdgeInsets.symmetric(horizontal: 9.0, vertical: 5.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  backgroundBlendMode: BlendMode.srcATop,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(1, 3), // changes position of shadow
+                                    ),
+                                  ]
+                                ),
+                                child: Column(
                                   children: [
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Padding(
-                                          padding: EdgeInsets.fromLTRB(0, 10.0, 0, 10),
+                                          padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).size.height * 0.05, 0, MediaQuery.of(context).size.height * 0.05),
                                           child: Text(dateToString(data["date"]), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
                                         )
                                       ],
                                     ),
                                     SizedBox(
-                                      height: MediaQuery.of(context).size.height * 0.5,
+                                      height: MediaQuery.of(context).size.height * 0.53,
                                       child: GridView.count(
                                         // Create a grid with 2 columns. If you change the scrollDirection to
                                         // horizontal, this produces 2 rows.
                                         crossAxisCount: 2,
                                         padding: EdgeInsets.all(0),
                                         childAspectRatio: 1.4,
-                                        mainAxisSpacing: 2,
+                                        mainAxisSpacing: 10,
                                         shrinkWrap: true,
                                         // Generate 100 widgets that display their index in the List.
                                         children: List.generate(data["farm_activity_events"].length, (index) {
-                                          return Center(
-                                            child: Image.asset(
-                                                "images/icon"+data["farm_activity_events"][index]["farm_activity_id"].toString()+".png", width: 60.0, height: 60.0,
+                                          return GestureDetector(
+                                            child: Center(
+                                              child: Column(
+                                                children: [
+                                                  Image.asset(
+                                                    "images/icon"+data["farm_activity_events"][index]["farm_activity_id"].toString()+".png", width: 70, height: 70.0,
+                                                  ),
+                                                ]
+                                              ),
                                             ),
+                                            onTap: () => {
+
+                                              showActivityModal(data["farm_activity_events"][index]["farm_activity_id"], data["farm_activity_events"][index]["farm_activity"]["name"], data["farm_activity_events"][index]["farm_activity"]["description"], data["farm_activity_events"][index]["farm_activity"]["best_season"])
+                                                
+
+                                              }
+                                            
                                           );
                                         }),
                                       )
@@ -503,107 +732,29 @@ class _FirstPageState extends State<FirstPage> {
                                     )
                                     
                                   ],
-                                ),
-                                onTap: () {
+                                )
+                                
+                              );
+                            },
+                          );
 
-                                  showGeneralDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel, 
-                                    barrierColor: Colors.transparent,
-                                    transitionDuration: Duration(milliseconds: 400),
-                                    transitionBuilder: _buildNewTransition,
-                                    pageBuilder: (BuildContext context, Animation first, Animation second){
+                        }).toList(),
+                      ),
 
-                                      return Scaffold(
-                                        appBar: AppBar(
-                                          title: Text(""),
-                                          backgroundColor: Colors.transparent,
-                                          iconTheme: IconThemeData(color: Colors.black),
-                                          elevation: 0,
-                                        ),
-                                        body: ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: data["farm_activity_events"].length,
-                                          itemBuilder: (context, index) {
-                                            return Card(
-                                              elevation: 5,
-                                              margin: EdgeInsets.fromLTRB(10, 10, 15, 15),
-                                              child: CustomPaint(
-                                                  painter: DialogPainter(),
-                                                  child: Padding(
-                                                  padding: EdgeInsets.all(10),
-                                                  child: Container(
-                                                    width: MediaQuery.of(context).size.width,
-                                                    child: Row(
-                                                      
-                                                      children:[
-                                                
-                                                        Expanded(
-                                                          flex: 1,
-                                                          child: 
-                                                            Image.asset("images/icon"+data["farm_activity_events"][index]["farm_activity_id"].toString()+".png", width: 60.0, height: 60.0),
-                                                        
-                                                        ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Column(
-                                                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                               mainAxisAlignment: MainAxisAlignment.start,
-                                                               children: [
-                                                                Text(
-                                                                  data["farm_activity_events"][index]["farm_activity"]["name"].toString(),
-                                                                  maxLines: 10,
-                                                                  textAlign: TextAlign.center,
-                                                                  style: TextStyle(fontWeight: FontWeight.bold)
-                                                                ),
+                    
+                  ]
+                ),
+                )
 
-                                                                Text(
-                                                                  data["farm_activity_events"][index]["farm_activity"]["description"].toString(),
-                                                                  maxLines: 10,
-                                                                  textAlign: TextAlign.justify
-                                                                )
-                                                              ],
-                                                            ),
-                                                          )
-                                                                
-                                                      ]
-
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              
-                                            );
-                                          },
-                                        ),
-                                      );
-
-                                    }
-                                  );
-
-                                }
-                              )
-                              
-                            );
-                          },
-                        );
-
-                      }).toList(),
-                    )
-
-                  
-                ]
+                )
+                
               ),
-              )
-
-              )
               
-            ),
-            
-           
-          ],
+             
+            ],
 
+          )
+        ],
         ),
       )
     );

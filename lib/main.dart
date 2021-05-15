@@ -1,132 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
-import 'dart:developer';
-import 'package:fian/pages/firstPage.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:fian/pages/phoneConfiguration.dart';
+import 'package:fian/pages/home.dart';
+import 'package:fian/pages/tutorial.dart';
+import 'package:localstorage/localstorage.dart';
+import 'dart:async';
 
-void main() {
-  runApp(MyApp());
+final storage = new LocalStorage('events.json');
+
+void main() => runApp(MaterialApp(
+
+  theme: ThemeData(primaryColor: Colors.blue, accentColor: Colors.blue),
+  debugShowCheckedModeBanner: false,
+  home: SplashScreen(),
+
+));
+
+class SplashScreen extends StatefulWidget{
+  @override
+  _SplashScreen createState() => _SplashScreen();
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+class _SplashScreen extends State <SplashScreen> {
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  
-  List<ScreenHiddenDrawer> itens = new List();
-
-  @override
-  void initState() {
-
-    getToken();
-
-    itens.add(new ScreenHiddenDrawer(
-        new ItemHiddenMenu(
-          name: "Screen 1",
-          baseStyle: TextStyle( color: Colors.white.withOpacity(0.8), fontSize: 28.0 ),
-          colorLineSelected: Colors.teal,
-        ),
-        FirstPage()
-      )
-    );
-
+  void initState(){
+    
     super.initState();
+    Timer(Duration(seconds: 3), (){
+      
+      gotoPage();
 
+    });
   }
 
+  void gotoPage() async{
+
+    await storage.ready; 
+    var numberStored = await storage.getItem("numberstored");
+    var tutorialStored = await storage.getItem("tutorialstored");
+
+    if(numberStored == "true" && tutorialStored == "true"){
+       Navigator.push(context, new MaterialPageRoute(
+        builder: (context) => Home()
+      ));
+    }
+
+    else if(numberStored == "true"){
+      Navigator.push(context, new MaterialPageRoute(
+        builder: (context) => Tutorial()
+      ));
+    }
+
+    else{
+      Navigator.push(context, new MaterialPageRoute(
+        builder: (context) => PhoneConfiguration()
+      ));
+    }
+
+  }
 
   @override
-  Widget build(BuildContext context) {
-    
-    return HiddenDrawerMenu(
-      backgroundColorMenu: Colors.yellow.shade600,
-      backgroundColorAppBar: Colors.transparent,
-      screens: itens,
-        slidePercent: 60.0,
-        contentCornerRadius: 40,
-        leadingAppBar: Icon(Icons.menu, color: Colors.black,),
-        elevationAppBar: 0,
+  Widget build(BuildContext context){
+
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Container(
+            decoration: BoxDecoration(color: Colors.yellow.shade600),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+
+              Expanded(
+                flex: 2,
+                child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 50.0,
+                        child: Image.asset("images/agriculture.png", width: 50, height: 50,),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0),
+                      ),
+                      Text(
+                        "FIAN", 
+                        style: TextStyle(
+                          color: Colors.white, 
+                          fontSize: 24.0, 
+                          fontWeight: FontWeight.bold
+                        )
+                      )
+                    ],
+                  ),
+                )
+              ),
+              Expanded(
+                flex:1,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20.0)
+                    ),
+                    
+                  ],
+                )
+              )
+
+            ],
+          )
+        ],
+      ),
     );
-    
-  }
-
-  Future <void> getToken() async {
-    
-    await OneSignal.shared.init("4022145e-cf18-4919-ab6e-de8f87ffe910");
-    OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
-
-    OneSignal.shared.setNotificationReceivedHandler((OSNotification notification) {
-      //this.setState(() {
-        
-        print("Received notification: \n${notification.jsonRepresentation().replaceAll("\\n", "\n")}");
-      //});
-    });
-    
-    OneSignal.shared
-        .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
-     // this.setState(() {
-        
-          print("Opened notification: \n${result.notification.jsonRepresentation().replaceAll("\\n", "\n")}");
-      //});
-    });
 
 
   }
 
-}
-
-  class BluePainter extends CustomPainter{
-
-    @override
-    void paint(Canvas canvas, Size size){
-      Paint paint = Paint();
-      paint.color = HexColor("fdcb6e");;
-      paint.style = PaintingStyle.fill;
-      paint.strokeWidth = 20;
-
-      Path customDesign = Path();
-      customDesign.moveTo(size.width, size.height * 0.5);
-      customDesign.lineTo(size.width, size.height);
-      customDesign.lineTo(0, size.height);
-      customDesign.lineTo(0, size.height * 0.3);
-      canvas.drawPath(customDesign, paint);
-
-    }
-
-    @override
-    bool shouldRepaint(CustomPainter oldDelegate){
-      return oldDelegate != this;
-    }
-  }
-
-class HexColor extends Color {
-  static int _getColorFromHex(String hexColor) {
-    hexColor = hexColor.toUpperCase().replaceAll("#", "");
-    if (hexColor.length == 6) {
-      hexColor = "FF" + hexColor;
-    }
-    return int.parse(hexColor, radix: 16);
-  }
-
-  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }

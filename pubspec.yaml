@@ -29,6 +29,8 @@ dependencies:
   date_util: ^0.1.4
   onesignal_flutter: ^2.6.3
   localstorage: ^4.0.0+1
+  geolocator: ^7.0.3
+  pin_code_fields: ^7.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
