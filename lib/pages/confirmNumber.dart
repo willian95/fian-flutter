@@ -117,7 +117,7 @@ class _ConfirmNumber extends State <ConfirmNumber> {
                                   loading = true;
                                 });
 
-                                var data = await http.post('http://localhost:8000/api/verify-number', body: {
+                                var data = await http.post('https://fian.sytes.net/api/verify-number', body: {
                                   'phoneNumber': widget.phoneNumber,
                                   'code': code
                                 });
@@ -244,8 +244,70 @@ class _ConfirmNumber extends State <ConfirmNumber> {
                         
                         Center(
                           child: TextButton(
-                            child: Text("Reenviar mensaje"),
-                            onPressed: () => {
+                            child: Text("Reenviar mensaje", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                            onPressed: () async {
+
+                              try{
+                                setState((){
+                                  loading = true;
+                                });
+                                var data = await http.post('https://fian.sytes.net/api/store-number', body: {
+                                  'phoneNumber': widget.phoneNumber
+                                });
+                                
+
+                                setState((){
+                                  loading = false;
+                                });
+
+                                
+                                var response = json.decode(data.body);
+
+                                if(response["success"] == true){
+
+                                  AlertDialog alert = AlertDialog(
+                                    title: Text(response["msg"])
+                                  );
+
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return alert;
+                                    },
+                                  );
+
+                                }else{
+
+                                  AlertDialog alert = AlertDialog(
+                                    title: Text(response["msg"])
+                                  );
+
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return alert;
+                                    },
+                                  );
+
+                                }
+                              }on Exception catch(_){
+
+                                AlertDialog alert = AlertDialog(
+                                  title: Text("No posees conexión a internet")
+                                );
+
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return alert;
+                                  },
+                                );
+
+                                setState((){
+                                  loading = false;
+                                });
+
+                              }
 
                             }
                           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fian/pages/tutorial.dart';
 import 'package:fian/pages/confirmNumber.dart';
 import 'package:fian/pages/home.dart';
+import 'package:fian/pages/firstPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:localstorage/localstorage.dart';
@@ -120,7 +121,7 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                                 setState((){
                                   loading = true;
                                 });
-                                var data = await http.post('http://localhost:8000/api/store-number', body: {
+                                var data = await http.post('https//fian.sytes.net/api/store-number', body: {
                                   'phoneNumber': phoneNumber
                                 });
                                 
@@ -188,7 +189,7 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
 
                             if(tutorialStored == "true"){
                               Navigator.push(context, new MaterialPageRoute(
-                                builder: (context) => Home()
+                                builder: (context) => FirstPage()
                               ));
                             }else{
                               

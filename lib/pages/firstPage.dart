@@ -488,7 +488,7 @@ class _FirstPageState extends State<FirstPage> {
         painter: BluePainter(),
         child: Stack(
         children: [
-
+          
           SizedBox.expand(
             child: FittedBox(
               fit: BoxFit.fill,
@@ -500,21 +500,28 @@ class _FirstPageState extends State<FirstPage> {
 
             children: [
 
-              this.loading == true ? (
-                Center(child: CircularProgressIndicator())
+              this.loading == true ? Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: (
+                  Center(child: CircularProgressIndicator())
+                ),
               ) : (
-                events.length == 0 ? (
-                   Center(
-                     child: Column(
-                       children:[
-                         Image.asset("images/sad.png", width: 60, height: 60),
-                         Text("Aún no hay actividades, revisa tu conexión a internet")
-                       ]
-                     )
-                    )
+                events.length == 0 ? Padding(
+                  padding: const EdgeInsets.only(top: 50),
+                  child: (
+                     Center(
+                       child: Column(
+                         children:[
+                           Image.asset("images/sad.png", width: 60, height: 60),
+                           Text("Aún no hay actividades, revisa tu conexión a internet")
+                         ]
+                       )
+                      )
+                  ),
                 ) : (
 
                   Container(
+                    margin:EdgeInsets.only(top: 50),
                   child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -753,7 +760,21 @@ class _FirstPageState extends State<FirstPage> {
              
             ],
 
-          )
+          ),
+          Positioned(
+            child: AppBar(
+              title: Text("Transparent AppBar"),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {},
+                  tooltip: 'Share',
+                ),
+              ],
+            ),
+          ),
         ],
         ),
       )

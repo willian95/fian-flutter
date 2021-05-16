@@ -47,7 +47,7 @@ class _MarketState extends State <Market> {
         loading = true;
       });
 
-        var data = await http.post('http://localhost:8000/api/markets', 
+        var data = await http.post('http://0/api/markets', 
           body: {
             'departmentId': selectedDepartment
           }

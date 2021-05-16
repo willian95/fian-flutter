@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       slidePercent: 60.0,
       contentCornerRadius: 40,
       leadingAppBar: Icon(Icons.menu, color: Colors.black,),
-      elevationAppBar: 0,
+      elevationAppBar: 0.0,
     );
     
   }

@@ -28,7 +28,10 @@ class _SplashScreen extends State <SplashScreen> {
     super.initState();
     Timer(Duration(seconds: 3), (){
       
-      gotoPage();
+      Navigator.push(context, new MaterialPageRoute(
+        builder: (context) => PhoneConfiguration()
+      ));
+      //gotoPage();
 
     });
   }
