@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
-import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
-import 'package:fian/pages/firstPage.dart';
-import 'package:fian/pages/marketPage.dart';
+import 'package:FIAN/pages/firstPage.dart';
+import 'package:FIAN/pages/marketPage.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+import 'package:FIAN/widget/navigationDrawerWidget.dart';
 
 void main() {
   runApp(Home());
@@ -34,32 +35,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   
-  List<ScreenHiddenDrawer> itens = new List();
+ 
 
   @override
   void initState() {
 
     getToken();
-
-    itens.add(new ScreenHiddenDrawer(
-        new ItemHiddenMenu(
-          name: "Ciclo lunar",
-          baseStyle: TextStyle( color: Colors.white.withOpacity(0.8), fontSize: 28.0 ),
-          colorLineSelected: Colors.teal,
-        ),
-        FirstPage()
-      )
-    );
-
-    itens.add(new ScreenHiddenDrawer(
-        new ItemHiddenMenu(
-          name: "Mercados",
-          baseStyle: TextStyle( color: Colors.white.withOpacity(0.8), fontSize: 28.0 ),
-          colorLineSelected: Colors.teal,
-        ),
-        Market()
-      )
-    );
 
     super.initState();
 
@@ -70,21 +51,18 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     
 
-    return HiddenDrawerMenu(
-      backgroundColorMenu: Colors.yellow.shade600,
-      backgroundColorAppBar: Colors.transparent,
-      screens: itens,
-      slidePercent: 60.0,
-      contentCornerRadius: 40,
-      leadingAppBar: Icon(Icons.menu, color: Colors.black,),
-      elevationAppBar: 0.0,
+    return Scaffold(
+      drawer:NavigationDrawerWidget(),
+      appBar: AppBar(
+        title: Text("FIAN"),
+      ),
     );
     
   }
 
   Future <void> getToken() async {
     
-    await OneSignal.shared.init("4022145e-cf18-4919-ab6e-de8f87ffe910");
+    await OneSignal.shared.init("841cfb24-eebf-49b1-8015-e18b490e278a");
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
 
     OneSignal.shared.setNotificationReceivedHandler((OSNotification notification) {

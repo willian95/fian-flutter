@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fian/pages/tutorial.dart';
-import 'package:fian/pages/confirmNumber.dart';
-import 'package:fian/pages/home.dart';
-import 'package:fian/pages/firstPage.dart';
+import 'package:FIAN/pages/tutorial.dart';
+import 'package:FIAN/pages/confirmNumber.dart';
+import 'package:FIAN/pages/firstPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:localstorage/localstorage.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 final storage = new LocalStorage('events.json');
 
@@ -25,6 +25,7 @@ class PhoneConfiguration extends StatefulWidget{
 class _PhoneConfiguration extends State <PhoneConfiguration> {
 
   String phoneNumber;
+  String phoneNumberError = "";
 
   var loading = false;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -33,214 +34,307 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
   Widget build(BuildContext context) {
     
     return Scaffold(
-      body: CustomPaint(
-        painter: BluePainter(),
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          child: SingleChildScrollView(
-            physics: ScrollPhysics(),
-            child: Column(
-              children: [
-
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                  child:Center(
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 50.0,
-                      child: Image.asset("images/agriculture.png", width: 50, height: 50,),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Text(
-                        "Hola! Bienvenido al Calendario Agropecuario y Alimentario Oficial de Food First Information and Action Network (FIAN) para COLOMBIA!",
-                        style: TextStyle(
-                          fontSize: 18
-                        ),
-                        textAlign: TextAlign.center
-                        ,
-                      ),
-                    )
-                  )
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 20),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: Text("Sabemos que puedes encontrarte en un lugar donde la señal no sea la mejor! Así que si quieres recibir mensajes de texto via SMS para actualizarte acerca de los ciclos Lunares y las Actividades para cada día! Te recomendamos que ingreses tu número de celular (no es obligatorio), de lo contrario puedes continuar",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500
-                      ),),
-                    )),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 20),
-                  child: Icon(Icons.phone_android),
-                ),
-                Container(
-                  child: Text("Ingresa tu # celular"),
-                ),
-                Form(
-                  key: formKey,
-                  child: Column(  
+      body: WillPopScope(
+          onWillPop: () async {return false;},
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: SingleChildScrollView(
+              child: Stack(
+                children:[ 
+                  
+                  Container(
+                  height: MediaQuery.of(context).size.height < 650 ? MediaQuery.of(context).size.height + 170 : MediaQuery.of(context).size.height,
+                  child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 30, 20),
-                        child: buildPhoneField(),
+
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 60, 0, 0),
+                        child:Center(
+                          child: Text("Calendario", style: GoogleFonts.montserrat(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            color: HexColor("#144E41")
+                          )),
+                        ),
                       ),
-
-                      if(loading == true)( CircularProgressIndicator() )
-                      else(
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: ElevatedButton(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                              child: Text(
-                                "Continuar", style: TextStyle(fontSize: 16)
-                              ),
-                            ),
-                            onPressed: () async{
-
-                              if(!formKey.currentState.validate()){
-                                return;
-                              }
-
-                              formKey.currentState.save();
-                              
-                              try{
-                                setState((){
-                                  loading = true;
-                                });
-                                var data = await http.post('https//fian.sytes.net/api/store-number', body: {
-                                  'phoneNumber': phoneNumber
-                                });
-                                
-
-                                setState((){
-                                  loading = false;
-                                });
-
-                                
-                                var response = json.decode(data.body);
-
-                                if(response["success"] == true){
-                                  Navigator.push(context, new MaterialPageRoute(
-                                    builder: (context) => ConfirmNumber(phoneNumber)
-                                  ));
-                                }else{
-
-                                  AlertDialog alert = AlertDialog(
-                                    title: Text(response["msg"])
-                                  );
-
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return alert;
-                                    },
-                                  );
-
-                                }
-                              }on Exception catch(_){
-
-                                AlertDialog alert = AlertDialog(
-                                  title: Text("No posees conexión a internet")
-                                );
-
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return alert;
-                                  },
-                                );
-
-                                setState((){
-                                  loading = false;
-                                });
-
-                              }
-
-                              
-
-                            }
-                          
-                          ),
-                        )
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 0, 40),
+                        child:Center(
+                          child: Text("Agropecuario", style: GoogleFonts.montserrat(
+                            fontSize: 30,
+                            color: HexColor("#144E41")
+                          )),
+                        ),
                       ),
 
                       Container(
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                        child: TextButton(
-                          child: Text("Saltar / Continuar", style: TextStyle(color: Colors.grey)),
-                          onPressed: () async {
+                        padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                        child: Text("Sabemos que puedes encontrarte en un lugar donde la señal no sea la mejor.",
+                        textAlign: TextAlign.center,
+                        softWrap: true,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 15,
+                          color: HexColor("#959595")
+                        ),),
+                      ),
 
-                            await storage.ready;
-                            var tutorialStored = await storage.getItem("tutorialstored");
+                      Container(
+                        padding: EdgeInsets.fromLTRB(30, 15, 30, 0),
+                        child: Text("Si quieres recibir mensajes de texto vía SMS, para actualizarte acerca del ciclo lunar y las Actividades recomendadas para cada día.",
+                        textAlign: TextAlign.center,
+                        softWrap: true,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 15,
+                          color: HexColor("#959595")
+                        ),),
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(30, 15, 30, 0),
+                        child: Text("¡Déjanos tu número!",
+                        textAlign: TextAlign.center,
+                        softWrap: true,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 15,
+                          color: HexColor("#959595")
+                        ),),
+                      ),
+                      
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 30, 0, 3),
+                        child: Text("Ingresa tu número celular"),
+                      ),
+                      Form(
+                        key: formKey,
+                        child: Column(  
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Flexible(flex: 1, child: Text("+57", style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w600))),
+                                  Flexible(flex:5, child: Padding(
+                                    padding: const EdgeInsets.only(right: 20),
+                                    child: buildPhoneField(),
+                                  )),
+                                ],
+                              ),
+                            ),
+                            Text(phoneNumberError, textAlign: TextAlign.center, style: GoogleFonts.montserrat(fontSize: 14, color: Colors.red)),
+                            if(loading == true)( CircularProgressIndicator() )
+                            else(
+                              Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: ElevatedButton(
+                                  child: Text(
+                                    "continuar".toUpperCase(),
+                                    style: GoogleFonts.montserrat(fontSize: 14)
+                                  ),
+                                  style: ButtonStyle(
+                                    padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(50, 20, 50, 20)),
+                                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                    backgroundColor: MaterialStateProperty.all<Color>(HexColor("#144E41")),
+                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(18.0),
+                                        side: BorderSide(color: HexColor("#144E41"))
+                                      )
+                                    )
+                                  ),
+                                  onPressed: () async{
 
-                            if(tutorialStored == "true"){
-                              Navigator.push(context, new MaterialPageRoute(
-                                builder: (context) => FirstPage()
-                              ));
-                            }else{
-                              
-                              Navigator.push(context, new MaterialPageRoute(
-                                builder: (context) => Tutorial()
-                              ));
+                                    this.phoneNumberError = "";
+                                    print(formKey.currentState.validate());
+                                    if(!formKey.currentState.validate()){
+                                      return;
+                                    }else{
+                                      print("here");
+                                      formKey.currentState.save();
+                                    
+                                      try{
+                                        setState((){
+                                          loading = true;
+                                        });
+                                        var data = await http.post('https://app.fiancolombia.org/api/store-number', body: {
+                                          'phoneNumber': phoneNumber
+                                        });
+                                        
+                                        setState((){
+                                          loading = false;
+                                        });
 
-                            }
+                                        
+                                        var response = json.decode(data.body);
 
+                                        if(response["success"] == true){
+                                          Navigator.push(context, new MaterialPageRoute(
+                                            builder: (context) => ConfirmNumber(phoneNumber)
+                                          ));
+                                        }else{
+
+                                          AlertDialog alert = AlertDialog(
+                                            title: Text(response["msg"])
+                                          );
+
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return alert;
+                                            },
+                                          );
+
+                                        }
+                                      }on Exception catch(_){
+
+                                        AlertDialog alert = AlertDialog(
+                                          title: Text("No posees conexión a internet")
+                                        );
+
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return alert;
+                                          },
+                                        );
+
+                                        setState((){
+                                          loading = false;
+                                        });
+
+                                      }
+
+                                    }
+
+
+                                  }
+                                ),
+                              )
+                            ),
+
+                            Container(
+                              margin: EdgeInsets.fromLTRB(0, 10, 0, 20),
+                              child: TextButton(
+                                child: Text("Omitir", style: GoogleFonts.montserrat(color: Colors.grey)),
+                                onPressed: () async {
+
+                                  await storage.ready;
+                                  var tutorialStored = await storage.getItem("tutorialstored");
+
+                                  if(tutorialStored == "true"){
+                                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>FirstPage()), (Route<dynamic> route) => false);
+                                  }else{
+                                    
+                                    Navigator.push(context, new MaterialPageRoute(
+                                      builder: (context) => Tutorial()
+                                    ));
+
+                                  }
+
+                                },
+                              ),
+                            ),
                             
-                          },
+                            
+                          ],
                         ),
                       )
-                    ],
+
+                    ]
+
+                  )
+                ),
+                
+                  Positioned(
+                    width: MediaQuery.of(context).size.width,
+                    bottom: 0,
+                    child:  Container(
+                    height: 150,
+                    margin: EdgeInsets.only(top: 20),
+                    child: CustomPaint(
+                      painter:BluePainter(),
+                      child: Stack(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    transform: Matrix4.translationValues(-40, 0, 0.0),
+                                    child: Image.asset("images/hoja1.png", width: 70, height: 70),
+                                  ),
+                                  Image.asset("images/hoja3.png", width: 70, height: 70)
+                                ],
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(top: 65, left: 40, right: 40),
+                            child: Text(
+                                "Te recomendamos que ingreses tu número de celular (no es obligatorio), de lo contrario puedes continuar",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.white
+                              ),
+
+                            )
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                )
-
-              ]
-
-            )
-          )
-        )
+                  )
+                ]
+              ),
+            ),
+          ),
       )
     );
   }
 
   Widget buildPhoneField(){
-    return TextFormField(
-      keyboardType: TextInputType.phone,
-      decoration: new InputDecoration(
-        labelText: "Número telefónico",
-        floatingLabelBehavior: FloatingLabelBehavior.never,
-        fillColor: Colors.white,
-        isDense: true,
-        filled: true,
-        border: new OutlineInputBorder(
-          borderRadius: new BorderRadius.circular(25.0),
-          borderSide: new BorderSide(
-
-          ),
+    return Material(
+      elevation: 10,
+      borderRadius: new BorderRadius.circular(10.0),
+      borderOnForeground: true,
+      child: TextFormField(
+        maxLength: 10,
+        textAlign: TextAlign.center,
+        keyboardType: TextInputType.number,
+        decoration: new InputDecoration(
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          fillColor: Colors.white,
+          isDense: false,
+          filled: false,
+          counterText: "",
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          contentPadding:EdgeInsets.only(bottom: 15, top: 15),
+          hintText: "(012) - 345 6789",
+          //fillColor: Colors.green
         ),
-        //fillColor: Colors.green
+        validator: (String value){
+          if(value.isEmpty){
+            return 'Número de teléfono es requerido';
+            
+          }
+          else if(value.length > 10){
+            return 'Número de teléfono debe tener 10 dígitos';
+            
+          }
+
+          else if(value.length < 10){
+            return 'Número de teléfono debe tener 10 dígitos';
+          }
+        },
+        onSaved: (String value){
+          phoneNumber = value;
+        },
       ),
-      validator: (String value){
-        if(value.isEmpty){
-          return 'Número de teléfono es requerido';
-        }
-      },
-      onSaved: (String value){
-        phoneNumber = value;
-      },
     );
   }
 
@@ -250,17 +344,21 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
 
     @override
     void paint(Canvas canvas, Size size){
+      
       Paint paint = Paint();
-      paint.color = HexColor("fdcb6e");;
+      paint.color = HexColor("#144E41");
       paint.style = PaintingStyle.fill;
-      paint.strokeWidth = 20;
+      paint.strokeWidth = 8;
 
-      Path customDesign = Path();
-      customDesign.moveTo(size.width, size.height * 0.5);
-      customDesign.lineTo(size.width, size.height);
-      customDesign.lineTo(0, size.height);
-      customDesign.lineTo(0, size.height * 0.3);
-      canvas.drawPath(customDesign, paint);
+      Path path_0 = Path();
+      path_0.moveTo(0,size.height);
+      path_0.lineTo(size.width,size.height);
+      path_0.lineTo(size.width,size.height*0.3600000);
+      path_0.quadraticBezierTo(size.width*0.1500000,size.height*0.4800000,0,0);
+      path_0.quadraticBezierTo(0,size.height*0.2500000,0,size.height);
+      path_0.close();
+     
+      canvas.drawPath(path_0, paint);
 
     }
 

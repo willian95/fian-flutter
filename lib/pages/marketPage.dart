@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:FIAN/widget/navigationDrawerWidget.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Market extends StatefulWidget{
   @override
@@ -9,6 +11,7 @@ class Market extends StatefulWidget{
 
 class _MarketState extends State <Market> {
 
+  Future<List<MarketShow>> marketList;
   var loading = false;
   String selectedDepartment = "0";
   var departments = ["Seleccione un departamento-0", "Antioquia-1", "Atlantico-2", "D. C. Santa Fe de Bogotá-3", "Bolívar-4", "Boyacá-5", "Caldas-6", "Caqueta-7", "Cauca-8",
@@ -47,7 +50,7 @@ class _MarketState extends State <Market> {
         loading = true;
       });
 
-        var data = await http.post('http://0/api/markets', 
+        var data = await http.post('https://app.fiancolombia.org/api/markets', 
           body: {
             'departmentId': selectedDepartment
           }
@@ -89,148 +92,195 @@ class _MarketState extends State <Market> {
   } 
 
   @override
+  void initState(){
+    
+    super.initState();
+    
+    var markets = getData();
+    setState((){
+      marketList = markets;
+    });
+
+  }
+
+  @override
   Widget build(BuildContext context){
 
     
     return Scaffold(
-      body: CustomPaint(
-        painter: BluePainter(),
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          child: SingleChildScrollView(
-            physics: ScrollPhysics(),
+      extendBodyBehindAppBar: true,
+      drawerScrimColor: Colors.transparent,
+      drawer:NavigationDrawerWidget(),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        title: Text(""),
+      ),
+      body: Column(
+        children: [
+          /*Center(child: Container(
+            transform: Matrix4.translationValues( MediaQuery.of(context).size.width*0.4, MediaQuery.of(context).size.height*-0.5, 0.0),
+            child: Image.asset("images/hoja3.png", width: 100, height: 100),
+          )),*/
+
+          Container(
             child: Column(
               children: [
 
                 Column(
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        child: Center(
-                          child: Text("Mercados", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold )) 
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                        child: DropdownButton(
-                          value: selectedDepartment,
-                          onChanged: (newValue) {
-                            setState(() {
-                              
-                              selectedDepartment = newValue.toString();
-                              getData();
-                              
-                            });
-                          },
-                          items: departments.map((value) {
-                            return new DropdownMenuItem(
-                              value: value.toString().substring(value.toString().indexOf("-") + 1, value.toString().length),
-                              child: new Text(value.toString().substring(0, value.toString().indexOf("-"))),
-                            );
-                          }).toList(),
-                        )
-
-                      ),
-
-            
-                    ]
-                  ),
-
-                ],
-
-              ),
-
-                FutureBuilder(
-                future: getData(),
-                builder: (BuildContext context, AsyncSnapshot snapshot){
-                  if(snapshot.data == null && loading == true){
-                    return Container(
-                      margin: EdgeInsets.only(top: 10),
-                      child:Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    );
-                  }
-                  else if(snapshot.data == null && loading == true){
-                    return Container(
-                      margin: EdgeInsets.only(top: 10),
-                      child:Center(
-                        child: Text("No hay mercados para mostrar"),
-                      )
-                    );
-                  }
-                  else{
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      itemCount:snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index){
-
-                        return Container(
-                          
-                            padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
-                            width: MediaQuery.of(context).size.width,
-                            child: Column(
-                              children: [
-                                Center(child: Text(snapshot.data[index].district+" - "+snapshot.data[index].department, style: TextStyle(fontSize: 14),)),
-                                Card(
-                                  elevation: 2,
-                                  child: Padding(
-                                    padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                                    child: Column(
-                                      children: [
-                                        Center(
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Icon(Icons.store_mall_directory_outlined),
-                                              Text(snapshot.data[index].name, style: TextStyle(fontWeight: FontWeight.bold))
-                                            ],
-                                          )
-                                        ),
-                                        Center(
-                                          heightFactor: 2,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Icon(Icons.location_on_outlined),
-                                              Text(snapshot.data[index].address)
-                                            ],
-                                          )
-                                        ),
-                                        Center(
-                                          heightFactor: 2,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Icon(Icons.calendar_today_outlined),
-                                              Text(snapshot.data[index].schedule)
-                                            ],
-                                          )
-                                        ),
-                                        
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ] ,
+                  children: [
+                    CustomPaint(
+                      painter:BluePainter(),
+                      child: Stack(
+                        children: [
+                          Align(
+                            widthFactor: MediaQuery.of(context).size.width,
+                            alignment: Alignment.centerRight,
+                            child: Image.asset("images/hoja3.png", width: 60, height: 60),
+                          ),
+                          Container(
+                            height: 150,
+                            child: Center(
+                              child: Text("Mercados", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white )) 
                             ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                          child: DropdownButton(
+                            value: selectedDepartment,
+                            onChanged: (newValue) {
+                              setState(() {
+                                
+                                selectedDepartment = newValue.toString();
+                                var markets = getData();
+                                setState((){
+                                  marketList = markets;
+                                });
+                                
+                              });
+                            },
+                            items: departments.map((value) {
+                              return new DropdownMenuItem(
+                                value: value.toString().substring(value.toString().indexOf("-") + 1, value.toString().length),
+                                child: new Text(value.toString().substring(0, value.toString().indexOf("-"))),
+                              );
+                            }).toList(),
+                          )
+
+                        ),
+
+              
+                      ]
+                    ),
+
+                  ],
+
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height*0.6,
+                  child: SingleChildScrollView(
+                    physics: ScrollPhysics(),
+                    child: FutureBuilder(
+                      future: marketList,
+                      builder: (BuildContext context, AsyncSnapshot snapshot){
+                        if(snapshot.data == null && loading == true){
+                          return Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child:Center(
+                              child: CircularProgressIndicator(),
+                            )
                           );
-                      },
-                    );
-                  }
-                  
-                }
-              )
+                        }
+                        else if(snapshot.data == null && loading == true){
+                          return Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child:Center(
+                              child: Text("No hay mercados para mostrar"),
+                            )
+                          );
+                        }
+                        else{
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemCount:snapshot.data.length,
+                            itemBuilder: (BuildContext context, int index){
+
+                              return Container(
+                                
+                                  padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Column(
+                                    children: [
+                                      Center(child: Text(snapshot.data[index].district+" - "+snapshot.data[index].department, style: GoogleFonts.montserrat(fontSize: 14),)),
+                                      Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15.0),
+                                        ),
+                                        child: Padding(
+                                          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                                          child: Column(
+                                            children: [
+                                              Center(
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(Icons.store_mall_directory_outlined),
+                                                    Text(snapshot.data[index].name, style: GoogleFonts.montserrat(fontWeight: FontWeight.bold))
+                                                  ],
+                                                )
+                                              ),
+                                              Center(
+                                                heightFactor: 2,
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(Icons.location_on_outlined),
+                                                    Text(snapshot.data[index].address)
+                                                  ],
+                                                )
+                                              ),
+                                              Center(
+                                                heightFactor: 2,
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(Icons.calendar_today_outlined),
+                                                    Text(snapshot.data[index].schedule)
+                                                  ],
+                                                )
+                                              ),
+                                              
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ] ,
+                                  ),
+                                );
+                            },
+                          );
+                        }
+                        
+                      }
+                  ),
+                    ),
+                )
 
               ],
             ),
           ),
-        )   
-          
-        )
+        ],
+      )
               
     
         
@@ -269,16 +319,20 @@ class BluePainter extends CustomPainter{
     @override
     void paint(Canvas canvas, Size size){
       Paint paint = Paint();
-      paint.color = HexColor("fdcb6e");
+      paint.color = HexColor("#144E41");
       paint.style = PaintingStyle.fill;
       paint.strokeWidth = 20;
 
-       Path customDesign = Path();
-      customDesign.moveTo(size.width, size.height * 0.5);
-      customDesign.lineTo(size.width, size.height);
-      customDesign.lineTo(0, size.height);
-      customDesign.lineTo(0, size.height * 0.3);
-      canvas.drawPath(customDesign, paint);
+      Path path_0 = Path();
+      path_0.moveTo(0,size.height);
+      path_0.quadraticBezierTo(size.width*0.0327750,size.height*0.7393000,size.width*0.1815000,size.height*0.7518000);
+      path_0.quadraticBezierTo(size.width*0.3861250,size.height*0.7509125,size.width,size.height*0.7482500);
+      path_0.lineTo(size.width,0);
+      path_0.lineTo(0,0);
+      path_0.lineTo(0,size.height);
+      path_0.close();
+     
+      canvas.drawPath(path_0, paint);
 
     }
 

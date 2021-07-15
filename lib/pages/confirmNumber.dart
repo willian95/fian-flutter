@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:fian/pages/tutorial.dart';
-import 'package:fian/pages/home.dart';
+import 'package:FIAN/pages/tutorial.dart';
+import 'package:FIAN/pages/firstPage.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:google_fonts/google_fonts.dart';
 
 final storage = new LocalStorage('events.json');
 
@@ -47,281 +48,328 @@ class _ConfirmNumber extends State <ConfirmNumber> {
     return Scaffold(
       body: CustomPaint(
         painter: BluePainter(),
-        child: Column(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: SingleChildScrollView(
+            physics: ScrollPhysics(),
+            child: Stack(
 
-            children: [
-              Container(
-                margin: EdgeInsets.all(5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TextButton(
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.black,
-                      ),
-                      onPressed: () => {
-                        Navigator.pop(context)
-                      },
-                    ),
-                  ],
-                )
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                child:Center(
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 50.0,
-                    child: Image.asset("images/agriculture.png", width: 50, height: 50,),
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(30),
-                child: Text("Ya casi! Por favor ingresa el código que acabaste de recibir por mensaje de texto (SMS):", style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 20),
-                child: Form(
-                  key: formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        PinCodeTextField(
-                          appContext: context,
-                          length: 5,
-                          obscureText: false,
-                          keyboardType: TextInputType.number,
-                          animationType: AnimationType.fade,
-                          controller: textEditingController,
-                          pinTheme: PinTheme(
-                            shape: PinCodeFieldShape.box,
-                            borderRadius: BorderRadius.circular(5),
-                            fieldHeight: 50,
-                            activeColor: Colors.lightBlue,
-                            inactiveFillColor: Colors.lightBlue,
-                            inactiveColor: Colors.lightBlue,
-                            fieldWidth: 40,
-                            activeFillColor: Colors.white,
+                children: [
+
+                  Center(child: Container(
+                    transform: Matrix4.translationValues((MediaQuery.of(context).size.width/2)*-1 + 40, MediaQuery.of(context).size.height - 170, 0.0),
+                    child: Image.asset("images/hoja2.png", width: 160, height: 160),
+                  )),
+
+                  Center(child: Container(
+                    transform: Matrix4.translationValues(MediaQuery.of(context).size.width/2 - 40, MediaQuery.of(context).size.height - 170, 0.0),
+                    child: Image.asset("images/hoja3.png", width: 160, height: 160),
+                  )),
+
+
+                  Column(
+                  
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 20),
+                        child: Row(
                           
-                          ),
-                          animationDuration: Duration(milliseconds: 300),
-                          enableActiveFill: true,
-                          onCompleted: (v) async {
-                            
-                            try{
-
-                                setState((){
-                                  loading = true;
-                                });
-
-                                var data = await http.post('https://fian.sytes.net/api/verify-number', body: {
-                                  'phoneNumber': widget.phoneNumber,
-                                  'code': code
-                                });
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            TextButton(
+                              child: Icon(
+                                Icons.arrow_back,
+                                color: Colors.black,
+                              ),
+                              onPressed: () => {
+                                Navigator.pop(context)
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 60, 0, 0),
+                        child:Center(
+                          child: Text("Calendario", style: GoogleFonts.montserrat(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            color: HexColor("#144E41")
+                          )),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 0, 40),
+                        child:Center(
+                          child: Text("Agropecuario", style: GoogleFonts.montserrat(
+                            fontSize: 30,
+                            color: HexColor("#144E41")
+                          )),
+                        ),
+                      ),
+                      Text("¡Ya casi!", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, color: HexColor("#A2C617"), fontSize: 20)),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(60, 30, 60, 30),
+                        child: Text("Por favor ingresa el código que acabaste de recibir por mensaje de texto (SMS)", textAlign: TextAlign.center,
+                        style: GoogleFonts.montserrat(color: HexColor("#959595"))),
+                      ),
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: Form(
+                      key: formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            PinCodeTextField(
+                              boxShadows: [
+                                BoxShadow(
+                                  offset: Offset(0, 1),
+                                  color: Colors.black12,
+                                  blurRadius: 20,
+                                )
+                              ],
+                              appContext: context,
+                              length: 5,
+                              obscureText: false,
+                              keyboardType: TextInputType.number,
+                              animationType: AnimationType.fade,
+                              controller: textEditingController,
+                              cursorColor: Colors.white,
+                              pinTheme: PinTheme(
+                                shape: PinCodeFieldShape.box,
+                                borderRadius: BorderRadius.circular(15),
+                                fieldHeight: 60,
+                                activeColor: Colors.green,
+                                inactiveFillColor: Colors.white,
+                                inactiveColor: Colors.white,
+                                fieldWidth: 60,
+                                activeFillColor: HexColor("#144E41"),
+                                selectedFillColor: HexColor("#144E41"),
+                              
+                              ),
+                 
+                              animationDuration: Duration(milliseconds: 300),
+                              enableActiveFill: true,
+                              onCompleted: (v) async {
                                 
-                                setState((){
-                                  loading = false;
-                                });
+                                try{
 
-                                var response = json.decode(data.body);
+                                    setState((){
+                                      loading = true;
+                                    });
 
-                                setState(() {
-                                  message = response["msg"];
-                                });
+                                    var data = await http.post('https://app.fiancolombia.org/api/verify-number', body: {
+                                      'phoneNumber': widget.phoneNumber,
+                                      'code': code
+                                    });
+                                    
+                                    setState((){
+                                      loading = false;
+                                    });
 
-                                if(response["success"] == true){
+                                    var response = json.decode(data.body);
 
-                                  setState(() => {
-                                    checked = true
-                                  });
+                                    setState(() {
+                                      message = response["msg"];
+                                    });
 
-                                  await storage.ready; 
-                                  storage.setItem("numberstored", "true");
+                                    if(response["success"] == true){
 
-                                  Timer(Duration(seconds: 3), () async {
-                                    await storage.ready;
-                                    var tutorialStored = await storage.getItem("tutorialstored");
+                                      setState(() => {
+                                        checked = true
+                                      });
 
-                                    if(tutorialStored == "true"){
-                                      Navigator.push(context, new MaterialPageRoute(
-                                        builder: (context) => Home()
-                                      ));
-                                    }else{
+                                      await storage.ready; 
+                                      storage.setItem("numberstored", "true");
+
+                                      Timer(Duration(seconds: 3), () async {
+                                        await storage.ready;
+                                        var tutorialStored = await storage.getItem("tutorialstored");
+
+                                        if(tutorialStored == "true"){
+                                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>FirstPage()), (Route<dynamic> route) => false);
+                                        }else{
+                                          
+                                          Navigator.push(context, new MaterialPageRoute(
+                                            builder: (context) => Tutorial()
+                                          ));
+
+                                        }
+
+                                      });
+
                                       
-                                      Navigator.push(context, new MaterialPageRoute(
-                                        builder: (context) => Tutorial()
-                                      ));
+                                    }else{
+
+                                      AlertDialog alert = AlertDialog(
+                                        title: Text(response["msg"])
+                                      );
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return alert;
+                                        },
+                                      );
 
                                     }
+                                  }on Exception catch(_){
 
-                                  });
+                                    AlertDialog alert = AlertDialog(
+                                      title: Text("No posees conexión a internet")
+                                    );
 
-                                  
-                                }else{
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return alert;
+                                      },
+                                    );
 
-                                  AlertDialog alert = AlertDialog(
-                                    title: Text(response["msg"])
-                                  );
+                                    setState((){
+                                      loading = false;
+                                    });
 
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return alert;
-                                    },
-                                  );
+                                  }
+
+                              },
+                              onChanged: (value) {
+                                print(value);
+                                setState(() {
+                                  code = value;
+                                });
+                              },
+                              beforeTextPaste: (text) {
+                                print("Allowing to paste $text");
+                                //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                                //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                                return true;
+                              },
+                            ),
+                            
+                            if(loading == true)
+                            (
+                              Container(
+                                child: CircularProgressIndicator(),
+                              )
+                            ),
+
+                            if(checked == true)
+                            (
+                              Container(
+                                child: Icon(
+                                  Icons.check_circle_outline_rounded,
+                                  size: 100
+                                ),
+                              )
+                            ),
+
+                            if(checked == false && loading == false && message != "")
+                            (
+                              Container(
+                                child: Icon(
+                                  Icons.clear,
+                                  size: 100
+                                ),
+                              )
+                              
+                            ),
+                            if(checked == false && loading == false && message != "")
+                            (
+                              Container(
+                                child: Text(message)
+                              )
+                            ),
+                            
+                            Center(
+                              child: TextButton(
+                                child: Text("Reenviar mensaje", style: GoogleFonts.montserrat(color: Colors.grey, fontWeight: FontWeight.bold)),
+                                onPressed: () async {
+
+                                  try{
+
+                                    setState((){
+                                      loading = true;
+                                    });
+                                    var data = await http.post('https://app.fiancolombia.org/api/store-number', body: {
+                                      'phoneNumber': widget.phoneNumber
+                                    });
+                                    
+
+                                    setState((){
+                                      loading = false;
+                                    });
+
+                                    
+                                    var response = json.decode(data.body);
+
+                                    if(response["success"] == true){
+
+                                      AlertDialog alert = AlertDialog(
+                                        title: Text(response["msg"])
+                                      );
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return alert;
+                                        },
+                                      );
+
+                                    }else{
+
+                                      AlertDialog alert = AlertDialog(
+                                        title: Text(response["msg"])
+                                      );
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return alert;
+                                        },
+                                      );
+
+                                    }
+                                  }on Exception catch(_){
+
+                                    AlertDialog alert = AlertDialog(
+                                      title: Text("No posees conexión a internet")
+                                    );
+
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return alert;
+                                      },
+                                    );
+
+                                    setState((){
+                                      loading = false;
+                                    });
+
+                                  }
 
                                 }
-                              }on Exception catch(_){
+                              ),
+                            )
 
-                                AlertDialog alert = AlertDialog(
-                                  title: Text("No posees conexión a internet")
-                                );
-
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return alert;
-                                  },
-                                );
-
-                                setState((){
-                                  loading = false;
-                                });
-
-                              }
-
-                          },
-                          onChanged: (value) {
-                            print(value);
-                            setState(() {
-                              code = value;
-                            });
-                          },
-                          beforeTextPaste: (text) {
-                            print("Allowing to paste $text");
-                            //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                            //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                            return true;
-                          },
+                          ],
                         ),
-                        
-                        if(loading == true)
-                        (
-                          Container(
-                            child: CircularProgressIndicator(),
-                          )
-                        ),
-
-                        if(checked == true)
-                        (
-                          Container(
-                            child: Icon(
-                              Icons.check_circle_outline_rounded,
-                              size: 100
-                            ),
-                          )
-                        ),
-
-                        if(checked == false && loading == false && message != "")
-                        (
-                          Container(
-                            child: Icon(
-                              Icons.clear,
-                              size: 100
-                            ),
-                          )
-                          
-                        ),
-                        if(checked == false && loading == false && message != "")
-                        (
-                          Container(
-                            child: Text(message)
-                          )
-                        ),
-                        
-                        Center(
-                          child: TextButton(
-                            child: Text("Reenviar mensaje", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
-                            onPressed: () async {
-
-                              try{
-                                setState((){
-                                  loading = true;
-                                });
-                                var data = await http.post('https://fian.sytes.net/api/store-number', body: {
-                                  'phoneNumber': widget.phoneNumber
-                                });
-                                
-
-                                setState((){
-                                  loading = false;
-                                });
-
-                                
-                                var response = json.decode(data.body);
-
-                                if(response["success"] == true){
-
-                                  AlertDialog alert = AlertDialog(
-                                    title: Text(response["msg"])
-                                  );
-
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return alert;
-                                    },
-                                  );
-
-                                }else{
-
-                                  AlertDialog alert = AlertDialog(
-                                    title: Text(response["msg"])
-                                  );
-
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return alert;
-                                    },
-                                  );
-
-                                }
-                              }on Exception catch(_){
-
-                                AlertDialog alert = AlertDialog(
-                                  title: Text("No posees conexión a internet")
-                                );
-
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return alert;
-                                  },
-                                );
-
-                                setState((){
-                                  loading = false;
-                                });
-
-                              }
-
-                            }
-                          ),
-                        )
-
-                      ],
+                      ),
                     ),
+                  )
+
+                    ]
                   ),
-                ),
-              )
+                 
+                 
 
-
-            ],
-          
+                ],
+              
+            ),
+          ),
         )
       )
     );
@@ -335,16 +383,17 @@ class BluePainter extends CustomPainter{
     @override
     void paint(Canvas canvas, Size size){
       Paint paint = Paint();
-      paint.color = HexColor("fdcb6e");;
+      paint.color = HexColor("#144E41");
       paint.style = PaintingStyle.fill;
       paint.strokeWidth = 20;
 
-      Path customDesign = Path();
-      customDesign.moveTo(size.width, size.height * 0.5);
-      customDesign.lineTo(size.width, size.height);
-      customDesign.lineTo(0, size.height);
-      customDesign.lineTo(0, size.height * 0.3);
-      canvas.drawPath(customDesign, paint);
+      Path path_0 = Path();
+      path_0.moveTo(0,size.height);
+      path_0.lineTo(size.width,size.height);
+      path_0.lineTo(size.width, size.height*0.900000);
+      path_0.quadraticBezierTo(size.width*-0.02,size.height*0.95000,0,size.height*0.6500000);
+     
+      canvas.drawPath(path_0, paint);
 
     }
 
