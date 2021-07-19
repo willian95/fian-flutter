@@ -19,28 +19,52 @@ class NavigationDrawerWidget extends StatelessWidget {
           child: Material(
             color: Color.fromRGBO(20, 78, 65, 1),
             child: Container(
-              margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.2),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Center(
-                    child: Image.asset("images/logowhite.png", width: 120, height: 120),
+                  Container(
+                    margin: EdgeInsets.only(top: 40),
+                    child: Center(
+                      child: Image.asset("images/logowhite.png", width: 160, height: 160),
+                    ),
                   ),
 
-                  ListTile(
-                    title: Text("CICLO LUNAR", style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.w800)),
-                    onTap: () => selectedItem(context, 0),
+                  Column(
+                    children:[
+                      ListTile(
+                        title: Text("CICLO LUNAR", style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.w800)),
+                        onTap: () => selectedItem(context, 0),
+                      ),
+                      ListTile(
+                        title: Text("LISTA DE MERCADOS", style: GoogleFonts.montserrat(color: Colors.white)),
+                        onTap: () => selectedItem(context, 1),
+                      ),
+                      ListTile(
+                        title: Text("CONTÁCTANOS", style: GoogleFonts.montserrat(color: Colors.white)),
+                        onTap: () => selectedItem(context, 2),
+                      ),
+                      ListTile(
+                        title: Text("TUTORIAL", style: GoogleFonts.montserrat(color: Colors.white)),
+                        onTap: () => selectedItem(context, 3),
+                      ),
+                    ]
                   ),
-                  ListTile(
-                    title: Text("LISTA DE MERCADOS", style: GoogleFonts.montserrat(color: Colors.white)),
-                    onTap: () => selectedItem(context, 1),
-                  ),
-                  ListTile(
-                    title: Text("CONTÁCTANOS", style: GoogleFonts.montserrat(color: Colors.white)),
-                    onTap: () => selectedItem(context, 2),
-                  ),
-                  ListTile(
-                    title: Text("TUTORIAL", style: GoogleFonts.montserrat(color: Colors.white)),
-                    onTap: () => selectedItem(context, 3),
+
+                  Container(
+                    margin: EdgeInsets.only(bottom: 40),
+                    child: Column(
+                      children:[
+                        Center(
+                          child: Image.asset("images/univeridad_de_caldas.png", width: 90)
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Center(
+                            child: Image.asset("images/jardin_botanico.png", width: 90)
+                          ),
+                        )
+                      ]
+                    ),
                   )
 
                 ],

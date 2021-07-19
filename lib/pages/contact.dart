@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -102,119 +104,128 @@ class _ContactState extends State <Contact> {
   @override
   Widget build(BuildContext context){
 
+    var scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       drawerScrimColor: Colors.transparent,
       drawer:NavigationDrawerWidget(),
+      key:scaffoldKey,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         title: Text(""),
+        leading: IconButton(
+          icon: Image.asset('images/menu.png', width: 20, height: 20), 
+          onPressed: () => scaffoldKey.currentState.openDrawer()
+        ),
       ),
-      body: CustomPaint(
-        painter: BluePainter(),
-        child: Stack(
+      body: Container(
+        
+        child: Column(
           children: [
 
-            Center(child: Container(
-              transform: Matrix4.translationValues( MediaQuery.of(context).size.width*0.4, MediaQuery.of(context).size.height*-0.5, 0.0),
-              child: Image.asset("images/hoja3.png", width: 100, height: 100),
-            )),
-
-            Container(
-              
-              child: Column(
-                children: [
-
-                  Column(
-                    
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.04, bottom: 15),
-                        child: Center(
-                          child: Text("Contacto", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white )) 
-                        ),
-                      ),
-
-                    ],
-
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 90),
-                    padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
-                    child: SingleChildScrollView(
-                      physics: ScrollPhysics(),
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-
-                          children:[
-
-
-                            Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: buildNameField(),
-                            ),
-
-                            Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: buildEmailField(),
-                            ),
-                            
-
-                            Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: buildTextField(),
-                            ),
-                            
-                            Container(
-                              padding: EdgeInsets.only(top: 10),
-                              child: ElevatedButton(
-                                child: Text(
-                                  "enviar".toUpperCase(),
-                                  style: GoogleFonts.montserrat(fontSize: 14)
-                                ),
-                                style: ButtonStyle(
-                                  padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(50, 20, 50, 20)),
-                                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                  backgroundColor: MaterialStateProperty.all<Color>(HexColor("#144E41")),
-                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(18.0),
-                                      side: BorderSide(color: HexColor("#144E41"))
-                                    )
-                                  )
-                                ),
-                                onPressed: () async{
-
-                            
-                                  if(!formKey.currentState.validate()){
-                                    return;
-                                  }
-
-                                  formKey.currentState.save();
-                                  
-                                  await sendData();
-
-                                  
-
-                                }
-                              ),
-                            )
-                          ] 
-
-                        ),
-                      )
-                    ),
-                  )
-
-                ],
+            CustomPaint(
+              painter: BluePainter(),
+              child: Container(
+                height: 150,
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Contacto", style: TextStyle(color: HexColor("#144E41")),),
+                    Text("Contacto", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+                    Image.asset("images/hoja3.png", width: 60, height: 60)
+                  ],
+                ),
               ),
             ),
+
+            /*Column(
+              
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1, bottom: 15),
+                  child: Center(
+                    child: Text("Contacto", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white )) 
+                  ),
+                ),
+
+              ],
+
+            ),*/
+            Container(
+              padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+              child: SingleChildScrollView(
+                physics: ScrollPhysics(),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+
+                    children:[
+
+
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: buildNameField(),
+                      ),
+
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: buildEmailField(),
+                      ),
+                      
+
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: buildTextField(),
+                      ),
+                      
+                      Container(
+                        padding: EdgeInsets.only(top: 10),
+                        child: ElevatedButton(
+                          child: Text(
+                            "enviar".toUpperCase(),
+                            style: GoogleFonts.montserrat(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)
+                          ),
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(50, 20, 50, 20)),
+                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                            backgroundColor: MaterialStateProperty.all<Color>(HexColor("#144E41")),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18.0),
+                                side: BorderSide(color: HexColor("#144E41"))
+                              )
+                            )
+                          ),
+                          onPressed: () async{
+
+                      
+                            if(!formKey.currentState.validate()){
+                              return;
+                            }
+
+                            formKey.currentState.save();
+                            
+                            await sendData();
+
+                            
+
+                          }
+                        ),
+                      )
+                    ] 
+
+                  ),
+                )
+              ),
+            )
+
           ],
-        )   
-          
+        ),
       )
         
       );
@@ -354,10 +365,13 @@ class BluePainter extends CustomPainter{
       paint.strokeWidth = 20;
 
       Path path_0 = Path();
-      path_0.moveTo(0,0);
+      path_0.moveTo(size.width*0.2175000,size.height*0.7500000);
+      path_0.quadraticBezierTo(size.width*0.8053125,size.height*0.7612500,size.width,size.height*0.7500000);
       path_0.lineTo(size.width,0);
-      path_0.lineTo(size.width, size.height*0.100000);
-      path_0.quadraticBezierTo(size.width*-0.001,size.height*0.10000,0,size.height*0.250000);
+      path_0.lineTo(0,0);
+      path_0.lineTo(0,size.height);
+      path_0.quadraticBezierTo(size.width*0.0428125,size.height*0.7487500,size.width*0.2175000,size.height*0.7500000);
+      path_0.close();
      
       canvas.drawPath(path_0, paint);
     }

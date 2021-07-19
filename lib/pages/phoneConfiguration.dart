@@ -36,18 +36,15 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
     return Scaffold(
       body: WillPopScope(
           onWillPop: () async {return false;},
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: SingleChildScrollView(
-              child: Stack(
-                children:[ 
-                  
-                  Container(
-                  height: MediaQuery.of(context).size.height < 650 ? MediaQuery.of(context).size.height + 170 : MediaQuery.of(context).size.height,
-                  child: Column(
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width, minHeight: MediaQuery.of(context).size.height),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
                     children: [
-
                       Container(
                         margin: EdgeInsets.fromLTRB(0, 60, 0, 0),
                         child:Center(
@@ -67,9 +64,14 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                           )),
                         ),
                       ),
+                    ],
+                  ),
 
+                  Column(
+                    children: [
                       Container(
                         padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                        margin: EdgeInsets.only(bottom: 20),
                         child: Text("Sabemos que puedes encontrarte en un lugar donde la señal no sea la mejor.",
                         textAlign: TextAlign.center,
                         softWrap: true,
@@ -91,6 +93,7 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                       ),
                       Container(
                         padding: EdgeInsets.fromLTRB(30, 15, 30, 0),
+                        margin: EdgeInsets.only(bottom: 20),
                         child: Text("¡Déjanos tu número!",
                         textAlign: TextAlign.center,
                         softWrap: true,
@@ -99,171 +102,169 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                           color: HexColor("#959595")
                         ),),
                       ),
-                      
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0, 30, 0, 3),
-                        child: Text("Ingresa tu número celular"),
-                      ),
-                      Form(
-                        key: formKey,
-                        child: Column(  
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Flexible(flex: 1, child: Text("+57", style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w600))),
-                                  Flexible(flex:5, child: Padding(
-                                    padding: const EdgeInsets.only(right: 20),
-                                    child: buildPhoneField(),
-                                  )),
-                                ],
-                              ),
-                            ),
-                            Text(phoneNumberError, textAlign: TextAlign.center, style: GoogleFonts.montserrat(fontSize: 14, color: Colors.red)),
-                            if(loading == true)( CircularProgressIndicator() )
-                            else(
-                              Container(
-                                margin: EdgeInsets.only(top: 10),
-                                child: ElevatedButton(
-                                  child: Text(
-                                    "continuar".toUpperCase(),
-                                    style: GoogleFonts.montserrat(fontSize: 14)
+                      Column(
+                        children:[
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0, 30, 0, 3),
+                            child: Text("Ingresa tu número celular",  style: GoogleFonts.montserrat(
+                              fontSize: 15
+                            )),
+                          ),
+                          Form(
+                            key: formKey,
+                            child: Column(  
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Flexible(flex: 1, child: Text("+57", style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w600))),
+                                      Flexible(flex:5, child: Padding(
+                                        padding: const EdgeInsets.only(right: 20),
+                                        child: buildPhoneField(),
+                                      )),
+                                    ],
                                   ),
-                                  style: ButtonStyle(
-                                    padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(50, 20, 50, 20)),
-                                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                    backgroundColor: MaterialStateProperty.all<Color>(HexColor("#144E41")),
-                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(18.0),
-                                        side: BorderSide(color: HexColor("#144E41"))
-                                      )
-                                    )
-                                  ),
-                                  onPressed: () async{
+                                ),
+                                Text(phoneNumberError, textAlign: TextAlign.center, style: GoogleFonts.montserrat(fontSize: 14, color: Colors.red)),
+                                if(loading == true)( CircularProgressIndicator() )
+                                else(
+                                  Container(
+                                    margin: EdgeInsets.only(top: 10),
+                                    child: ElevatedButton(
+                                      child: Text(
+                                        "confirmar".toUpperCase(),
+                                        style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.bold, color:  Colors.white)
+                                      ),
+                                      style: ButtonStyle(
+                                        padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(50, 20, 50, 20)),
+                                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                        backgroundColor: MaterialStateProperty.all<Color>(HexColor("#144E41")),
+                                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(18.0),
+                                            side: BorderSide(color: HexColor("#144E41"))
+                                          )
+                                        )
+                                      ),
+                                      onPressed: () async{
 
-                                    this.phoneNumberError = "";
-                                    print(formKey.currentState.validate());
-                                    if(!formKey.currentState.validate()){
-                                      return;
-                                    }else{
-                                      print("here");
-                                      formKey.currentState.save();
-                                    
-                                      try{
-                                        setState((){
-                                          loading = true;
-                                        });
-                                        var data = await http.post('https://app.fiancolombia.org/api/store-number', body: {
-                                          'phoneNumber': phoneNumber
-                                        });
-                                        
-                                        setState((){
-                                          loading = false;
-                                        });
-
-                                        
-                                        var response = json.decode(data.body);
-
-                                        if(response["success"] == true){
-                                          Navigator.push(context, new MaterialPageRoute(
-                                            builder: (context) => ConfirmNumber(phoneNumber)
-                                          ));
+                                        this.phoneNumberError = "";
+                                        print(formKey.currentState.validate());
+                                        if(!formKey.currentState.validate()){
+                                          return;
                                         }else{
+                                          print("here");
+                                          formKey.currentState.save();
+                                        
+                                          try{
+                                            setState((){
+                                              loading = true;
+                                            });
+                                            var data = await http.post('https://app.fiancolombia.org/api/store-number', body: {
+                                              'phoneNumber': phoneNumber
+                                            });
+                                            
+                                            setState((){
+                                              loading = false;
+                                            });
 
-                                          AlertDialog alert = AlertDialog(
-                                            title: Text(response["msg"])
-                                          );
+                                            
+                                            var response = json.decode(data.body);
 
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return alert;
-                                            },
-                                          );
+                                            if(response["success"] == true){
+                                              Navigator.push(context, new MaterialPageRoute(
+                                                builder: (context) => ConfirmNumber(phoneNumber)
+                                              ));
+                                            }else{
+
+                                              AlertDialog alert = AlertDialog(
+                                                title: Text(response["msg"])
+                                              );
+
+                                              showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return alert;
+                                                },
+                                              );
+
+                                            }
+                                          }on Exception catch(_){
+
+                                            AlertDialog alert = AlertDialog(
+                                              title: Text("No posees conexión a internet")
+                                            );
+
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return alert;
+                                              },
+                                            );
+
+                                            setState((){
+                                              loading = false;
+                                            });
+
+                                          }
 
                                         }
-                                      }on Exception catch(_){
 
-                                        AlertDialog alert = AlertDialog(
-                                          title: Text("No posees conexión a internet")
-                                        );
 
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return alert;
-                                          },
-                                        );
+                                      }
+                                    ),
+                                  )
+                                ),
 
-                                        setState((){
-                                          loading = false;
-                                        });
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(0, 10, 0, 40),
+                                  child: TextButton(
+                                    child: Text("Omitir", style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontWeight: FontWeight.bold)),
+                                    onPressed: () async {
+
+                                      await storage.ready;
+                                      var tutorialStored = await storage.getItem("tutorialstored");
+
+                                      if(tutorialStored == "true"){
+                                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>FirstPage()), (Route<dynamic> route) => false);
+                                      }else{
+                                        
+                                        Navigator.push(context, new MaterialPageRoute(
+                                          builder: (context) => Tutorial()
+                                        ));
 
                                       }
 
-                                    }
-
-
-                                  }
+                                    },
+                                  ),
                                 ),
-                              )
+                                
+                                
+                              ],
                             ),
-
-                            Container(
-                              margin: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                              child: TextButton(
-                                child: Text("Omitir", style: GoogleFonts.montserrat(color: Colors.grey)),
-                                onPressed: () async {
-
-                                  await storage.ready;
-                                  var tutorialStored = await storage.getItem("tutorialstored");
-
-                                  if(tutorialStored == "true"){
-                                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>FirstPage()), (Route<dynamic> route) => false);
-                                  }else{
-                                    
-                                    Navigator.push(context, new MaterialPageRoute(
-                                      builder: (context) => Tutorial()
-                                    ));
-
-                                  }
-
-                                },
-                              ),
-                            ),
-                            
-                            
-                          ],
-                        ),
+                          )
+                        ]
                       )
-
-                    ]
-
-                  )
-                ),
-                
-                  Positioned(
-                    width: MediaQuery.of(context).size.width,
-                    bottom: 0,
-                    child:  Container(
-                    height: 150,
-                    margin: EdgeInsets.only(top: 20),
+                    ],
+                  ),
+                  
+                  Container(
+                    
                     child: CustomPaint(
                       painter:BluePainter(),
                       child: Stack(
                         children: [
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     transform: Matrix4.translationValues(-40, 0, 0.0),
-                                    child: Image.asset("images/hoja1.png", width: 70, height: 70),
+                                    child: Image.asset("images/hoja1.png", width: 100, height: 100),
                                   ),
                                   Image.asset("images/hoja3.png", width: 70, height: 70)
                                 ],
@@ -271,7 +272,7 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                             ],
                           ),
                           Container(
-                            padding: EdgeInsets.only(top: 65, left: 40, right: 40),
+                            padding: EdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
                             child: Text(
                                 "Te recomendamos que ingreses tu número de celular (no es obligatorio), de lo contrario puedes continuar",
                                 textAlign: TextAlign.center,
@@ -285,8 +286,9 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                       ),
                     ),
                   ),
-                  )
+
                 ]
+
               ),
             ),
           ),
@@ -303,6 +305,9 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
         maxLength: 10,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
+        style: TextStyle(
+          fontSize: 20.0,
+        ),
         decoration: new InputDecoration(
           floatingLabelBehavior: FloatingLabelBehavior.never,
           fillColor: Colors.white,

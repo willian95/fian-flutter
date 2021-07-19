@@ -11,6 +11,7 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:supercharged/supercharged.dart';
+import 'package:lottie/lottie.dart';
 
 final storage = new LocalStorage('events.json');
 enum AniProps { x, y }
@@ -42,9 +43,10 @@ class _FirstPageState extends State<FirstPage> {
   int currentYear = 0;
   int currentDay = 0;
   String mainWeather = "";
-  ScrollController _scrollController = new ScrollController();
-  
-
+  ScrollController _scrollController;
+  GlobalKey containerKey = GlobalKey();
+  double dailyTextPosition = 0;
+  bool showDownArrow = true;
 
   @override
   void initState(){
@@ -57,13 +59,43 @@ class _FirstPageState extends State<FirstPage> {
     this.currentMonth = now.month;
     this.currentYear = now.year;
     this.currentDay = now.day;
+    _scrollController = new ScrollController(
+      initialScrollOffset: 0.0,
+      keepScrollOffset: true,
+    );
 
     this.getDailyText(currentDay < 10 ? "0"+currentDay.toString() : currentDay.toString(), currentMonth < 10 ? "0"+currentMonth.toString() : currentMonth.toString(), currentYear.toString());
 
     checkForLocalStorageExistence(this.currentYear, this.currentMonth, this.currentDay, "now", true, true);
     climateAPI();
 
-  }
+    //_scrollController.addListener(_scrollListener);
+    _scrollController.addListener(() {
+      //print(_scrollController.position.pixels);
+
+      double currentPosition = _scrollController.position.pixels;
+
+      double height = MediaQuery.of(context).size.height;
+      double tempPosition = (dailyTextPosition - height) + 100;
+
+
+      /*  setState(
+            (){
+              showDownArrow = true;
+            }
+          );
+
+        if(currentPosition > tempPosition){
+          setState(
+            (){
+              showDownArrow = false;
+            }
+          );
+        }*/
+      
+      });
+
+    }
 
   getDailyText(day, month, year) async{
 
@@ -72,6 +104,17 @@ class _FirstPageState extends State<FirstPage> {
     setState((){
       dailyText = res["text"];
     });
+
+    Timer(Duration(seconds: 3), (){
+      
+      RenderBox box = containerKey.currentContext.findRenderObject();
+      Offset position = box.localToGlobal(Offset.zero); //this is global position
+      dailyTextPosition = position.dy;
+      
+    });
+
+    
+
   }
 
   _selectDate(BuildContext context) async {
@@ -152,6 +195,7 @@ class _FirstPageState extends State<FirstPage> {
 
     var data = await http.get('https://app.fiancolombia.org/api/events'+"/"+month.toString()+"/"+year.toString());
     var newEvents = json.decode(data.body);
+
 
     var currentDate = new DateTime(this.currentYear, this.currentMonth, this.currentDay);
   
@@ -465,7 +509,7 @@ class _FirstPageState extends State<FirstPage> {
                                 child: Icon(
                                   Icons.close,
                                   color: Colors.grey,
-                                  size: 25,
+                                  size: 35,
                                 ),
                               ),
                             ]
@@ -473,13 +517,13 @@ class _FirstPageState extends State<FirstPage> {
                           Container(
                             margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
                             child: Image.asset(
-                              "images/icon"+id.toString()+".png", width: 90, height: 90.0,
+                              "images/icon"+id.toString()+".png", width: 100, height: 100
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
+                            padding: EdgeInsets.fromLTRB(7, 0, 7, 20),
                             child: Text(
-                              title,
+                              title.toUpperCase(),
                               overflow: TextOverflow.fade,
                               maxLines: 10,
                               textAlign: TextAlign.center,
@@ -517,15 +561,22 @@ class _FirstPageState extends State<FirstPage> {
   @override
   Widget build(BuildContext context) {
     
+    var scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       drawerScrimColor: Colors.transparent,
       drawer:NavigationDrawerWidget(),
+      key:scaffoldKey,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         title: Text(""),
+        leading: IconButton(
+          icon: Image.asset('images/menu.png', width: 20, height: 20), 
+          onPressed: () => scaffoldKey.currentState.openDrawer()
+        ),
       ),
       body: WillPopScope(
           
@@ -545,7 +596,7 @@ class _FirstPageState extends State<FirstPage> {
               ),
             ),
             Container(
-              color: Color.fromRGBO(20, 78, 65, 0.7),
+              color: Color.fromRGBO(20, 78, 65, 0.4),
             ),
             
             Container(
@@ -617,7 +668,7 @@ class _FirstPageState extends State<FirstPage> {
                                 new CarouselSlider(
                                   carouselController: _eventCarouselController,
                                   options: CarouselOptions(
-                                    height: 640,
+                                    height: 670,
                                     initialPage: 0,
                                     enableInfiniteScroll: false,
                                     reverse: false,
@@ -631,10 +682,6 @@ class _FirstPageState extends State<FirstPage> {
                                     onPageChanged: (index, reason) {
                                       
                                       if(this.mounted){
-                                   
-                                        
-                                        //var moonPhase = this.events[index]["moon_phase"];
-
 
                                         var indexDay = int.parse(this.events[index]["date"].toString().substring(8, 10));
                                         var indexMonth = int.parse(this.events[index]["date"].toString().substring(5, 7));
@@ -727,7 +774,7 @@ class _FirstPageState extends State<FirstPage> {
                                             var array = info.toString().split(",");
                                             var position = array[1].toString().replaceAll(")", "");
                                            
-                                            scrollToPoint(double.parse(position) + 150);
+                                            scrollToPoint(double.parse(position) + 250);
                                           },
                                           child: Padding(
                                             padding: EdgeInsets.only(top: 70),
@@ -737,7 +784,7 @@ class _FirstPageState extends State<FirstPage> {
                                                   
                                                   transform: Matrix4.translationValues( 0, -60, 0.0),
                                                   child:Center(
-                                                    child: Text("Luna "+data["moon_phase"].toString().replaceAll("_", " "), style:GoogleFonts.montserrat(color: HexColor("#144E41"), fontWeight: FontWeight.bold, fontSize: 15))
+                                                    child: Text("LUNA "+data["moon_phase"].toString().toUpperCase().replaceAll("_", " "), style:GoogleFonts.montserrat(color: HexColor("#144E41"), fontWeight: FontWeight.bold, fontSize: 15))
                                                     )
                                                 ),
                                                 Container(
@@ -790,7 +837,7 @@ class _FirstPageState extends State<FirstPage> {
                                                           child: Row(
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             children: [
-                                                              Text(dateToString(data["date"]), style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 20.0)),
+                                                              Text(dateToString(data["date"]).toString().toUpperCase(), style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 20.0)),
                                                               new Theme(
                                                                data: ThemeData.light().copyWith(
                                                                     primaryColor: const Color(0xFF8CE7F1),
@@ -839,8 +886,8 @@ class _FirstPageState extends State<FirstPage> {
                                                                         Image.asset(
                                                                           "images/icon"+data["farm_activity_events"][index]["farm_activity_id"].toString()+".png", width: 70, height: 70.0,
                                                                         ),
-                                                                        Text(data["farm_activity_events"][index]["farm_activity"]["name"], textAlign: TextAlign.center, style: GoogleFonts.montserrat(
-                                                                          fontSize: 10
+                                                                        Text(data["farm_activity_events"][index]["farm_activity"]["name"].toString().toUpperCase(), textAlign: TextAlign.center, style: GoogleFonts.montserrat(
+                                                                          fontSize: 10, fontWeight: FontWeight.bold
                                                                         ))
                                                                           
                                                                       ]
@@ -853,12 +900,12 @@ class _FirstPageState extends State<FirstPage> {
                                                                   
                                                                 },
                                                                 onVerticalDragUpdate:(info){
-                                                                  //print("info");
+                                                                  
                                                                   //print(info);
                                                                   var array = info.toString().split(",");
                                                                   var position = array[1].toString().replaceAll(")", "");
                                                                 
-                                                                  scrollToPoint(double.parse(position) + 150);
+                                                                  scrollToPoint(double.parse(position) + 250);
                                                                 },
                                                                 
                                                               );
@@ -882,6 +929,7 @@ class _FirstPageState extends State<FirstPage> {
                                 ),
                                 
                                 dailyText != "" ? Container(
+                                  key: containerKey,
                                   padding: EdgeInsets.only(left: 30, right: 30, top: 10),
                                   child: Card(
                                     shape: RoundedRectangleBorder(
@@ -891,7 +939,10 @@ class _FirstPageState extends State<FirstPage> {
                                     elevation: 2,
                                     child: Stack(
                                       children: [
-                                        Image.asset("images/hoja1.png", width: 180, height: 180),
+                                        Opacity(
+                                          opacity: 0.2,
+                                          child: Image.asset("images/hoja1.png", width: 180, height: 180)
+                                        ),
                                         Padding(
                                           padding: EdgeInsets.all(20),
                                           child: Column(
@@ -900,10 +951,14 @@ class _FirstPageState extends State<FirstPage> {
                                                 margin: EdgeInsets.only(top: 10, bottom: 15),
                                                 child: Image.asset("images/information-button.png", width: 40, height: 40)
                                               ),
-                                              Text(dailyText,
-                                              style: GoogleFonts.montserrat(
-                                                color: Colors.white
-                                              ))
+                                              Center(
+                                                child: Text(dailyText.toUpperCase(),
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.montserrat(
+                                                  color: Colors.white,
+                                                  
+                                                )),
+                                              )
                                             ]
                                           ),
                                         ),
@@ -923,14 +978,28 @@ class _FirstPageState extends State<FirstPage> {
                                 ),
 
                                 Container(
-                                  margin: EdgeInsets.only(top: 10),
-                                  padding: EdgeInsets.only(left: 30, right: 30, top: 10, bottom: 10),
+                                  margin: EdgeInsets.only(top: 20),
+                                  padding: EdgeInsets.only(left: 30, right: 30, top: 40, bottom: 10),
                                   width: MediaQuery.of(context).size.width,
                                   color: HexColor("#144E41"),
-                                  child: Text("Por el derecho humano a la alimentación y nutrición adecuadas y la soberanía alimentaria".toUpperCase(), textAlign: TextAlign.center, style: GoogleFonts.montserrat(
-                                    color: Colors.white,
-                                    fontSize: 10
-                                  ),),
+                                  child: Stack(
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            transform: Matrix4.translationValues( 40,-30, 0.0),
+                                            child: Image.asset("images/hoja3.png", width: 80, height: 80)
+                                          )
+                                        ],
+                                      ),
+                                      Text("Por el derecho humano a la alimentación y nutrición adecuadas y la soberanía alimentaria".toUpperCase(), textAlign: TextAlign.center, style: GoogleFonts.montserrat(
+                                        color: Colors.white,
+                                        fontSize: 10
+                                      ),),
+                                    ],
+                                  )
                                 )
                               
                             ]
@@ -952,19 +1021,35 @@ class _FirstPageState extends State<FirstPage> {
           ],
           ),
       ),
-      floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // Add your onPressed code here!
-            },
-            child: LoopAnimation<TimelineValue<AniProps>>(
-              tween: _tween, // Pass in tween
-              duration: _tween.duration, // Obtain duration
-              builder: (context, child, value) {
-                return Icon(Icons.arrow_downward)
-              }
-            ),
-            backgroundColor: Colors.green,
-          )
+      floatingActionButton: Stack(
+        children: [
+          showDownArrow == true ? Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: (){
+                      _scrollController.animateTo(dailyTextPosition, duration: new Duration(seconds: 2), curve: Curves.ease);
+                      showDownArrow = false;
+                    },
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: new BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                      ),
+                      child:Lottie.asset('images/arrow_down_icon.json', width: 50, height: 50)
+                    ),
+                  )
+                ],
+              )
+            ],
+          ) : Text("")
+        ],
+      )
       );
       
 

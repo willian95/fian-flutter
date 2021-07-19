@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -106,178 +108,196 @@ class _MarketState extends State <Market> {
   @override
   Widget build(BuildContext context){
 
-    
+    var scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       drawerScrimColor: Colors.transparent,
       drawer:NavigationDrawerWidget(),
+      key:scaffoldKey,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         title: Text(""),
+        leading: IconButton(
+          icon: Image.asset('images/menu.png', width: 20, height: 20), 
+          onPressed: () => scaffoldKey.currentState.openDrawer()
+        ),
       ),
       body: Column(
         children: [
-          /*Center(child: Container(
-            transform: Matrix4.translationValues( MediaQuery.of(context).size.width*0.4, MediaQuery.of(context).size.height*-0.5, 0.0),
-            child: Image.asset("images/hoja3.png", width: 100, height: 100),
-          )),*/
 
-          Container(
-            child: Column(
+          CustomPaint(
+            painter:BluePainter(),
+            child: Stack(
               children: [
-
-                Column(
-                  children: [
-                    CustomPaint(
-                      painter:BluePainter(),
-                      child: Stack(
-                        children: [
-                          Align(
-                            widthFactor: MediaQuery.of(context).size.width,
-                            alignment: Alignment.centerRight,
-                            child: Image.asset("images/hoja3.png", width: 60, height: 60),
-                          ),
-                          Container(
-                            height: 150,
-                            child: Center(
-                              child: Text("Mercados", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white )) 
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
-                          child: DropdownButton(
-                            value: selectedDepartment,
-                            onChanged: (newValue) {
-                              setState(() {
-                                
-                                selectedDepartment = newValue.toString();
-                                var markets = getData();
-                                setState((){
-                                  marketList = markets;
-                                });
-                                
-                              });
-                            },
-                            items: departments.map((value) {
-                              return new DropdownMenuItem(
-                                value: value.toString().substring(value.toString().indexOf("-") + 1, value.toString().length),
-                                child: new Text(value.toString().substring(0, value.toString().indexOf("-"))),
-                              );
-                            }).toList(),
-                          )
-
-                        ),
-
-              
-                      ]
-                    ),
-
-                  ],
-
+                Align(
+                  widthFactor: MediaQuery.of(context).size.width,
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 40),
+                    child: Image.asset("images/hoja3.png", width: 60, height: 60)
+                  ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height*0.6,
-                  child: SingleChildScrollView(
-                    physics: ScrollPhysics(),
-                    child: FutureBuilder(
-                      future: marketList,
-                      builder: (BuildContext context, AsyncSnapshot snapshot){
-                        if(snapshot.data == null && loading == true){
-                          return Container(
-                            margin: EdgeInsets.only(top: 10),
-                            child:Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          );
-                        }
-                        else if(snapshot.data == null && loading == true){
-                          return Container(
-                            margin: EdgeInsets.only(top: 10),
-                            child:Center(
-                              child: Text("No hay mercados para mostrar"),
-                            )
-                          );
-                        }
-                        else{
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.vertical,
-                            itemCount:snapshot.data.length,
-                            itemBuilder: (BuildContext context, int index){
-
-                              return Container(
-                                
-                                  padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
-                                  width: MediaQuery.of(context).size.width,
-                                  child: Column(
-                                    children: [
-                                      Center(child: Text(snapshot.data[index].district+" - "+snapshot.data[index].department, style: GoogleFonts.montserrat(fontSize: 14),)),
-                                      Card(
-                                        elevation: 5,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(15.0),
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                                          child: Column(
-                                            children: [
-                                              Center(
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  children: [
-                                                    Icon(Icons.store_mall_directory_outlined),
-                                                    Text(snapshot.data[index].name, style: GoogleFonts.montserrat(fontWeight: FontWeight.bold))
-                                                  ],
-                                                )
-                                              ),
-                                              Center(
-                                                heightFactor: 2,
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  children: [
-                                                    Icon(Icons.location_on_outlined),
-                                                    Text(snapshot.data[index].address)
-                                                  ],
-                                                )
-                                              ),
-                                              Center(
-                                                heightFactor: 2,
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  children: [
-                                                    Icon(Icons.calendar_today_outlined),
-                                                    Text(snapshot.data[index].schedule)
-                                                  ],
-                                                )
-                                              ),
-                                              
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                    ] ,
-                                  ),
-                                );
-                            },
-                          );
-                        }
-                        
-                      }
+                  height: 150,
+                  child: Center(
+                    child: Text("MERCADOS", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)) 
                   ),
-                    ),
-                )
-
+                ),
               ],
             ),
+          ),
+          Column(
+            children: [
+              
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 5, 0, 10),
+                child: DropdownButton(
+                  value: selectedDepartment,
+                  onChanged: (newValue) {
+                    setState(() {
+                      
+                      selectedDepartment = newValue.toString();
+                      var markets = getData();
+                      setState((){
+                        marketList = markets;
+                      });
+                      
+                    });
+                  },
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
+                  items: departments.map((value) {
+                    return new DropdownMenuItem(
+                      value: value.toString().substring(value.toString().indexOf("-") + 1, value.toString().length),
+                      child: new Text(value.toString().substring(0, value.toString().indexOf("-"))),
+                    );
+                  }).toList(),
+                )
+
+              ),
+
+            
+            ]
+          ),
+          Container(
+            
+            height: MediaQuery.of(context).size.height*0.6,
+            child: SingleChildScrollView(
+              physics: ScrollPhysics(),
+              child: FutureBuilder(
+                future: marketList,
+                builder: (BuildContext context, AsyncSnapshot snapshot){
+                  if(snapshot.data == null){
+                    return Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child:Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    );
+                  }
+                  else if(snapshot.data.length == 0 && loading == true){
+                    return Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child:Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    );
+                  }
+                  else if(snapshot.data.length == 0 && loading == false){
+                    return Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child:Center(
+                        child: Text("No hay mercados para mostrar", style: GoogleFonts.montserrat(color: Colors.black),),
+                      )
+                    );
+                  }
+                  else{
+                    return MediaQuery.removePadding(
+                      context: context,
+                      removeTop: true,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemCount:snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index){
+
+                          return Container(
+                              padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 10),
+                                    child: Center(child: Text(snapshot.data[index].district.toString().toUpperCase()+" - "+snapshot.data[index].department.toString().toUpperCase(), style: GoogleFonts.montserrat(fontSize: 14, color: HexColor("#144E41"), fontWeight: FontWeight.bold)))),
+                                  Card(
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                    ),
+                                    child: Container(
+                                      child: Padding(
+                                        padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                                        child: Column(
+                                          children: [
+                                            Center(
+                                               heightFactor: 2,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.store_mall_directory_outlined),
+                                                  Text(snapshot.data[index].name.toString().toUpperCase(), style: GoogleFonts.montserrat(fontWeight: FontWeight.bold))
+                                                ],
+                                              )
+                                            ),
+                                            Center(
+                                              heightFactor: 2,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: [
+                                                  Icon(Icons.location_on_outlined),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(left: 10),
+                                                    child: Text(snapshot.data[index].address.toString().toUpperCase(), style: TextStyle(fontSize: 15)),
+                                                  )
+                                                ],
+                                              )
+                                            ),
+                                            Center(
+                                              heightFactor: 2,
+                                              child: Row(
+                                                
+                                                verticalDirection: VerticalDirection.down,
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Icon(Icons.calendar_today_outlined),
+                                                  Flexible(child: Padding(
+                                                    padding: const EdgeInsets.only(left: 10),
+                                                    child: Text(snapshot.data[index].schedule.toString().toUpperCase(), softWrap: true, style: TextStyle(fontSize: 15),),
+                                                  ))
+                                                ],
+                                              )
+                                            ),
+                                            
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ] ,
+                              ),
+                            );
+                        },
+                      ),
+                    );
+                  }
+                  
+                }
+            ),
+              ),
           ),
         ],
       )

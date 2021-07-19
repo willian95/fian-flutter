@@ -42,8 +42,8 @@ class _Tutorial extends State <Tutorial> {
                 children: [
 
                   Center(child: Container(
-                    transform: Matrix4.translationValues((MediaQuery.of(context).size.width/2)*-1 + 40, MediaQuery.of(context).size.height - 170, 0.0),
-                    child: Image.asset("images/hoja2.png", width: 160, height: 160),
+                    transform: Matrix4.translationValues((MediaQuery.of(context).size.width/2)*-1 + 60, MediaQuery.of(context).size.height - 280, 0.0),
+                    child: Image.asset("images/hoja2.png", width: 300, height: 300),
                   )),
 
                   Center(child: Container(
@@ -53,14 +53,15 @@ class _Tutorial extends State <Tutorial> {
 
                     Container(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(top: 50),
                             child: CarouselSlider(
                               carouselController: tutorialController,
                                 options: CarouselOptions(
-                                  viewportFraction: 0.8,
-                                  height: 400,
+                                  viewportFraction: 1,
+                                  height: 500,
                                   initialPage: 0,
                                   enableInfiniteScroll: false,
                                   autoPlayCurve: Curves.fastOutSlowIn,
@@ -92,7 +93,7 @@ class _Tutorial extends State <Tutorial> {
                                                       Image.asset("images/tuto1.png", height: MediaQuery.of(context).size.height*0.45),
                                                       Padding(
                                                         padding: const EdgeInsets.only(top: 15),
-                                                        child: Center(child: Text("Acá te mostraremos todas las actividades agropecuarias de ESTE DÍA en particular", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: Colors.grey))),
+                                                        child: Center(child: Text("Acá te mostraremos todas las actividades agropecuarias de ESTE DÍA en particular", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontSize: 18))),
                                                       )
                                                     ],
                                                   )
@@ -108,7 +109,7 @@ class _Tutorial extends State <Tutorial> {
                                                   Image.asset("images/tuto4.png"),
                                                   Padding(
                                                     padding: const EdgeInsets.only(top: 15),
-                                                    child: Center(child: Text("Al hacer click en cualquier icono de actividad mostrará su información respectiva", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: Colors.grey))),
+                                                    child: Center(child: Text("Al hacer click en cualquier icono de actividad mostrará su información respectiva", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontSize: 18))),
                                                   )
                                                   
                                                 ],
@@ -116,15 +117,18 @@ class _Tutorial extends State <Tutorial> {
                                             )
 
                                             else if(data == "3") 
-                                            Padding(
+                                            Container(
+                                              height: 480,
+                                 
                                               padding: const EdgeInsets.all(5.0),
                                               child: (Column(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                 children: [
-                                                  
+                                                  Text(""),
                                                   Container(margin: EdgeInsets.only(top: 50), child: Image.asset("images/tuto2.png")),
                                                   Padding(
                                                     padding: const EdgeInsets.only(top: 15),
-                                                    child: Center(child: Text("Al hacer click en el icono del calendario desplegará un calendario para consultar cualquier fecha deseada", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: Colors.grey))),
+                                                    child: Center(child: Text("Al hacer click en el icono del calendario desplegará un calendario para consultar cualquier fecha deseada", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontSize: 18))),
                                                   )
                                                   
                                                 ],
@@ -140,7 +144,7 @@ class _Tutorial extends State <Tutorial> {
                                                   Image.asset("images/tuto3.png", height: MediaQuery.of(context).size.height*0.45),
                                                   Padding(
                                                     padding: const EdgeInsets.only(top: 15),
-                                                    child: Center(child: Text("Al hacer click en una fecha del calendario te llevará a la fecha consultada", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: Colors.grey))),
+                                                    child: Center(child: Text("Al hacer click en una fecha del calendario te llevará a la fecha consultada", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontSize: 18))),
                                                   )
                                                   
                                                 ],
@@ -156,7 +160,7 @@ class _Tutorial extends State <Tutorial> {
                                                   Image.asset("images/tuto5.png", height: MediaQuery.of(context).size.height*0.45),
                                                   Padding(
                                                     padding: const EdgeInsets.only(top: 15),
-                                                    child: Center(child: Text("Aquí podrás consultar los mercados disponibles", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: Colors.grey))),
+                                                    child: Center(child: Text("Aquí podrás consultar los mercados disponibles", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontSize: 18))),
                                                   )
                                                   
                                                 ],
@@ -180,7 +184,7 @@ class _Tutorial extends State <Tutorial> {
                                 child: ElevatedButton(
                                   child: Text(
                                     "continuar".toUpperCase(),
-                                    style: GoogleFonts.montserrat(fontSize: 14)
+                                    style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)
                                   ),
                                   style: ButtonStyle(
                                     padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(50, 20, 50, 20)),
@@ -201,7 +205,7 @@ class _Tutorial extends State <Tutorial> {
                               Container(
                                 margin: EdgeInsets.only(top: 15),
                                 child: TextButton(
-                                  child: Text("Omitir", style: GoogleFonts.montserrat(color: Colors.grey)),
+                                  child: Text("Omitir todo", style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontWeight: FontWeight.bold)),
                                   onPressed: () async{
 
                                     await storage.ready; 
@@ -242,7 +246,7 @@ class BluePainter extends CustomPainter{
       path_0.moveTo(0,size.height);
       path_0.lineTo(size.width,size.height);
       path_0.lineTo(size.width, size.height*0.900000);
-      path_0.quadraticBezierTo(size.width*-0.02,size.height*0.95000,0,size.height*0.6500000);
+      path_0.quadraticBezierTo(size.width*-0.02,size.height*0.95000,0,size.height*0.7500000);
      
       canvas.drawPath(path_0, paint);
 
