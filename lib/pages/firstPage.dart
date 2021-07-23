@@ -792,10 +792,10 @@ class _FirstPageState extends State<FirstPage> {
                                                   decoration: new BoxDecoration(
                                                     boxShadow: [
                                                       new BoxShadow(
-                                                        color: Colors.grey.withOpacity(0.5),
-                                                        spreadRadius: 2,
+                                                        color: Colors.grey.withOpacity(0.2),
+                                                        spreadRadius: 1,
                                                         blurRadius: 7,
-                                                        offset: Offset(0, 15),
+                                                        offset: Offset(1, 0),
                                                       ),
                                                     ],
                                                   ),
@@ -879,6 +879,22 @@ class _FirstPageState extends State<FirstPage> {
                                                             children: List.generate(data["farm_activity_events"].length, (index) {
                                                               return GestureDetector(
                                                                 child: Container(
+                                                                  decoration: BoxDecoration(
+                                                                   
+                                                                    border: Border(
+                                                                     
+                                                                      right: BorderSide( //                   <--- left side
+                                                                        color: Colors.grey,
+                                                                        width: 0.2,
+                                                                      ),
+                                                                      bottom: ( data["farm_activity_events"].length == 4 && (index == 0 || index == 1) || data["farm_activity_events"].length >= 5 && (index == 0 || index == 1 || index == 2 || index == 3)) ? BorderSide( //                   <--- left side
+                                                                        color: Colors.grey,
+                                                                        width: 0.2,
+                                                                      ) : BorderSide( color: Colors.white, width: 0.0),
+                                                                
+                                                                    ),
+                                                                    
+                                                                  ),
                                                                   padding: EdgeInsets.only(left: 10, right: 10),
                                                                   child: Center(
                                                                     child: Column(
@@ -886,9 +902,12 @@ class _FirstPageState extends State<FirstPage> {
                                                                         Image.asset(
                                                                           "images/icon"+data["farm_activity_events"][index]["farm_activity_id"].toString()+".png", width: 70, height: 70.0,
                                                                         ),
-                                                                        Text(data["farm_activity_events"][index]["farm_activity"]["name"].toString().toUpperCase(), textAlign: TextAlign.center, style: GoogleFonts.montserrat(
-                                                                          fontSize: 10, fontWeight: FontWeight.bold
-                                                                        ))
+                                                                        Container(
+                                                                          margin:EdgeInsets.only(top: 15),
+                                                                          child: Text(data["farm_activity_events"][index]["farm_activity"]["name"].toString().toUpperCase()+" "+data["farm_activity_events"].length.toString()+" "+index.toString(), textAlign: TextAlign.center, style: GoogleFonts.montserrat(
+                                                                            fontSize: 10, fontWeight: FontWeight.bold
+                                                                          )),
+                                                                        )
                                                                           
                                                                       ]
                                                                     )
@@ -911,8 +930,18 @@ class _FirstPageState extends State<FirstPage> {
                                                               );
                                                             }),
                                                           ),
+                                                        ),
+                                                        Padding(
+                                                          padding: const EdgeInsets.only(bottom: 20.0),
+                                                          child: Column(
+                                                            children: [
+                                                              Center(
+                                                                child: Text("Desliza para más información", style: GoogleFonts.montserrat(color: HexColor("#144E41"), fontWeight: FontWeight.bold)),
+                                                              ),
+                                                              Lottie.asset('images/arrow_down_black.json', width: 50, height: 50)
+                                                            ],
+                                                          ),
                                                         )
-                                                        
                                                       ],
                                                     )
                                                     
@@ -968,14 +997,6 @@ class _FirstPageState extends State<FirstPage> {
                                 ) : Text(""),
 
 
-                                Container(
-                                  padding: EdgeInsets.only(left: 80, right: 80),
-                                  margin: EdgeInsets.only(top: 20),
-                                  child: Text("DEFENDER EL DERECHO A LA ALIMENTACIÓN Y NUTRICIÓN ES:".toUpperCase(), textAlign: TextAlign.center, style: GoogleFonts.montserrat(
-                                    color: Colors.black54,
-                                    fontSize: 9
-                                  ),),
-                                ),
 
                                 Container(
                                   margin: EdgeInsets.only(top: 20),
@@ -994,7 +1015,7 @@ class _FirstPageState extends State<FirstPage> {
                                           )
                                         ],
                                       ),
-                                      Text("Por el derecho humano a la alimentación y nutrición adecuadas y la soberanía alimentaria".toUpperCase(), textAlign: TextAlign.center, style: GoogleFonts.montserrat(
+                                      Text("¡Por el derecho humano a la alimentación y nutrición adecuadas y la soberanía alimentaria!".toUpperCase(), textAlign: TextAlign.center, style: GoogleFonts.montserrat(
                                         color: Colors.white,
                                         fontSize: 10
                                       ),),
@@ -1021,35 +1042,6 @@ class _FirstPageState extends State<FirstPage> {
           ],
           ),
       ),
-      floatingActionButton: Stack(
-        children: [
-          showDownArrow == true ? Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      _scrollController.animateTo(dailyTextPosition, duration: new Duration(seconds: 2), curve: Curves.ease);
-                      showDownArrow = false;
-                    },
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: new BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                      child:Lottie.asset('images/arrow_down_icon.json', width: 50, height: 50)
-                    ),
-                  )
-                ],
-              )
-            ],
-          ) : Text("")
-        ],
-      )
       );
       
 

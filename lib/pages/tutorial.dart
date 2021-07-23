@@ -192,7 +192,7 @@ class _Tutorial extends State <Tutorial> {
                                     backgroundColor: MaterialStateProperty.all<Color>(HexColor("#144E41")),
                                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(18.0),
+                                        borderRadius: BorderRadius.circular(30.0),
                                         side: BorderSide(color: HexColor("#144E41"))
                                       )
                                     )

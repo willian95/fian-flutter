@@ -72,7 +72,7 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                       Container(
                         padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
                         margin: EdgeInsets.only(bottom: 20),
-                        child: Text("Sabemos que puedes encontrarte en un lugar donde la señal no sea la mejor.",
+                        child: Text("!Sabemos que puedes encontrarte en un lugar donde la señal no sea la mejor.",
                         textAlign: TextAlign.center,
                         softWrap: true,
                         style: GoogleFonts.montserrat(
@@ -83,7 +83,7 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
 
                       Container(
                         padding: EdgeInsets.fromLTRB(30, 15, 30, 0),
-                        child: Text("Si quieres recibir mensajes de texto vía SMS, para actualizarte acerca del ciclo lunar y las Actividades recomendadas para cada día.",
+                        child: Text("Si quieres recibir mensajes de texto vía SMS, para actualizarte acerca del Ciclo Lunar y las Actividades recomendadas para cada día.",
                         textAlign: TextAlign.center,
                         softWrap: true,
                         style: GoogleFonts.montserrat(
@@ -143,7 +143,7 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                                         backgroundColor: MaterialStateProperty.all<Color>(HexColor("#144E41")),
                                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(18.0),
+                                            borderRadius: BorderRadius.circular(30.0),
                                             side: BorderSide(color: HexColor("#144E41"))
                                           )
                                         )
@@ -221,7 +221,7 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                                 Container(
                                   margin: EdgeInsets.fromLTRB(0, 10, 0, 40),
                                   child: TextButton(
-                                    child: Text("Omitir", style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontWeight: FontWeight.bold)),
+                                    child: Text("Omitir todo", style: GoogleFonts.montserrat(color: HexColor("#7f8c8d"), fontWeight: FontWeight.bold)),
                                     onPressed: () async {
 
                                       await storage.ready;
@@ -256,30 +256,39 @@ class _PhoneConfiguration extends State <PhoneConfiguration> {
                       painter:BluePainter(),
                       child: Stack(
                         children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    transform: Matrix4.translationValues(-40, 0, 0.0),
-                                    child: Image.asset("images/hoja1.png", width: 100, height: 100),
-                                  ),
-                                  Image.asset("images/hoja3.png", width: 70, height: 70)
-                                ],
-                              ),
-                            ],
+                          Container(
+                            padding: EdgeInsets.only(top: 80, bottom: 30),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  transform: Matrix4.translationValues(-40, 0, 0.0),
+                                  child: Opacity(
+                                    opacity: 0.3,
+                                    child: Image.asset("images/hoja1.png", width: 100, height: 100)),
+                                ),
+                                Container(
+                                  transform: Matrix4.translationValues(40, 0, 0.0),
+                                  child: Opacity(
+                                    opacity: 0.3,
+                                    child: Image.asset("images/hoja3.png", width: 100, height: 100)),
+                                )
+                              ],
+                            ),
                           ),
                           Container(
-                            padding: EdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
-                            child: Text(
-                                "Te recomendamos que ingreses tu número de celular (no es obligatorio), de lo contrario puedes continuar",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.montserrat(
-                                  color: Colors.white
-                              ),
+                            padding: EdgeInsets.only(top: 80, left: 40, right: 40, bottom: 30),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: Text(
+                                  "Te recomendamos que ingreses tu número de celular (no es obligatorio), de lo contrario puedes continuar",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.white
+                                ),
 
+                              ),
                             )
                           ),
                         ],

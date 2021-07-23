@@ -99,7 +99,7 @@ class _WelcomePage extends State <WelcomePage> {
 
                       Padding(
                         padding: EdgeInsets.fromLTRB(40, 30, 40, 60),
-                        child: Text("El calendario Agropecuario y alimentario es un trabajo colectivo de organizaciones que buscan mantenerte al día con el ciclo luna", textAlign: TextAlign.center,
+                        child: Text("El calendario Agropecuario y alimentario es un trabajo colectivo de organizaciones que buscan mantenerte al día con el Ciclo Lunar", textAlign: TextAlign.center,
                         style: GoogleFonts.montserrat(color: HexColor("#959595")),
                         ),
                       ),

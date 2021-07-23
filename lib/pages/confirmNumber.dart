@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:FIAN/pages/tutorial.dart';
@@ -126,7 +128,7 @@ class _ConfirmNumber extends State <ConfirmNumber> {
                               boxShadows: [
                                 BoxShadow(
                                   offset: Offset(0, 1),
-                                  color: Colors.black12,
+                                  color: Colors.white,
                                   blurRadius: 20,
                                 )
                               ],
@@ -136,13 +138,16 @@ class _ConfirmNumber extends State <ConfirmNumber> {
                               keyboardType: TextInputType.number,
                               animationType: AnimationType.fade,
                               controller: textEditingController,
+                              textStyle: TextStyle(
+                                color: Colors.white
+                              ),
                               cursorColor: Colors.white,
                               pinTheme: PinTheme(
                                 shape: PinCodeFieldShape.box,
                                 borderRadius: BorderRadius.circular(15),
                                 fieldHeight: 60,
-                                activeColor: Colors.green,
-                                inactiveFillColor: Colors.white,
+                                activeColor: Colors.white,
+                                inactiveFillColor: HexColor("#144E41"),
                                 inactiveColor: Colors.white,
                                 fieldWidth: 60,
                                 activeFillColor: HexColor("#144E41"),
