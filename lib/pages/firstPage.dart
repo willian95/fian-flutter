@@ -47,6 +47,7 @@ class _FirstPageState extends State<FirstPage> {
   GlobalKey containerKey = GlobalKey();
   double dailyTextPosition = 0;
   bool showDownArrow = true;
+  String mainWeatherName = "";
 
   @override
   void initState(){
@@ -352,24 +353,32 @@ class _FirstPageState extends State<FirstPage> {
       }
 
     }
-
-    print("mainWeather");
-    print(mainWeather);
   
 
   }
 
   weatherAPICall(location) async{
 
-    print("mainLocation");
-    print(location);
-
     var data = await http.get("https://api.openweathermap.org/data/2.5/forecast?lat="+location.latitude.toString()+"&lon="+location.longitude.toString()+"&appid=d816b2362dc0ff9fc94670863e1505d9");
     var weatherData = json.decode(data.body);
+    var weatherCode = weatherData["list"][0]["weather"][0]["id"];
+
+    mainWeatherName = weatherData["list"][0]["weather"][0]["main"];
 
     if(this.mounted){
       setState((){
-        mainWeather = weatherData["list"][0]["weather"][0]["main"];
+        
+        if(weatherCode >= 200 && weatherCode <= 531){
+          mainWeather = "rain";
+        }
+
+        else if(weatherCode >= 700 && weatherCode <= 781){
+           mainWeather = "clouds";
+        }
+
+        else if(weatherCode >= 800 && weatherCode <= 804){
+           mainWeather = "clear";
+        }
       });
     }
 
@@ -664,7 +673,6 @@ class _FirstPageState extends State<FirstPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                             
                               children: <Widget>[
-
                                 new CarouselSlider(
                                   carouselController: _eventCarouselController,
                                   options: CarouselOptions(

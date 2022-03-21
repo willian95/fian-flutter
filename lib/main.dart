@@ -9,6 +9,7 @@ import 'package:simple_animations/simple_animations.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:lottie/lottie.dart';
 
 import 'dart:async';
 
@@ -51,9 +52,10 @@ class _SplashScreen extends State <SplashScreen> {
   void initState(){
     
     super.initState();
-    Timer(Duration(seconds: 3), (){
+    getToken();
+    Timer(Duration(seconds: 6), (){
       
-      getToken();
+      
       gotoPage();
 
     });
@@ -140,69 +142,38 @@ class _SplashScreen extends State <SplashScreen> {
         fit: StackFit.expand,
         children: [
           Container(
-            decoration: BoxDecoration(color: HexColor("#144E41")),
+            decoration: BoxDecoration(color: HexColor("#FFFFFF")),
           ),
           
           Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  
-                  LoopAnimation<TimelineValue<AniProps>>(
-                    tween: _tween, // Pass in tween
-                    duration: _tween.duration, // Obtain duration
-                    builder: (context, child, value) {
-                      return Transform.translate(
-                        offset: Offset(30, value.get(AniProps.y)),
-                        child: Image.asset("images/hoja1.png", width: 180, height: 180)
-                      );
-                    }
-                  )
-                  
-                  
-                  
-                ],
-              ),
-              Expanded(
-                flex: 2,
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Calendario", style: GoogleFonts.montserrat(
-                        fontSize: 30,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        
-                      )),
-                      Text("Agropecuario", style: GoogleFonts.montserrat(
-                        fontSize: 30,
-                        color: Colors.white,
-                      )),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                      ),
+
+              Container(
+                margin: EdgeInsets.only(top: 30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Calendario", style: GoogleFonts.montserrat(
+                      fontSize: 30,
+                      color: HexColor("#144E41"),
+                      fontWeight: FontWeight.w800,
                       
-                    ],
-                  ),
-                )
+                    )),
+                    Text("Agropecuario", style: GoogleFonts.montserrat(
+                      fontSize: 30,
+                      color: HexColor("#144E41"),
+                    )),
+                    Padding(
+                      padding: EdgeInsets.only(top: 10.0),
+                    ),
+                    
+                  ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  LoopAnimation<TimelineValue<AniProps>>(
-                    tween: _tween2, // Pass in tween
-                    duration: _tween2.duration, // Obtain duration
-                    builder: (context, child, value) {
-                      return Transform.translate(
-                        offset: Offset(0, value.get(AniProps.y)),
-                        child: Image.asset("images/hoja2.png", width: 120)
-                      );
-                    }
-                  )
-                ],
+
+              Center(
+                child: Lottie.asset('images/tree-plantation.json')
               )
 
             ],
