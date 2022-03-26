@@ -53,7 +53,7 @@ class _SplashScreen extends State <SplashScreen> {
     
     super.initState();
     getToken();
-    Timer(Duration(seconds: 6), (){
+    Timer(Duration(seconds: 10), (){
       
       
       gotoPage();
@@ -174,6 +174,17 @@ class _SplashScreen extends State <SplashScreen> {
 
               Center(
                 child: Lottie.asset('images/tree-plantation.json')
+              ),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text("Bienvenido", style: GoogleFonts.montserrat(
+                      fontSize: 30,
+                      color: HexColor("#144E41"),
+                      fontWeight: FontWeight.w800,
+                      
+                    ))
+                ),
               )
 
             ],
