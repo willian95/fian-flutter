@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
@@ -119,23 +123,77 @@ class _FirstPageState extends State<FirstPage> {
   }
 
   _selectDate(BuildContext context) async {
+    if (Platform.isIOS) {
+      var localPickerDate = DateTime.now();
 
-    final DateTime picked = await showDatePicker(
-      locale : const Locale("es","ES"),
-      context: context,
-      initialDate: selectedDate,// Refer step 1
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-        this.currentMonth = selectedDate.month;
-        this.currentYear = selectedDate.year;
-        this.currentDay = selectedDate.day;
-        checkForLocalStorageExistence(selectedDate.year, selectedDate.month, selectedDate.day, "old", true, false);
-    });
-}
+      showCupertinoModalPopup(
+          context: context,
+          builder: (_) => BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                      height: 500,
+                      color: const Color.fromRGBO(255, 255, 255, 0.5),
+                      child: CupertinoDatePicker(
+                          mode: CupertinoDatePickerMode.date,
+                          initialDateTime: DateTime.now(),
+                          maximumDate: DateTime(2025),
+                          minimumDate: DateTime(2000),
+                          onDateTimeChanged: (picked) {
+                            if (picked != null && picked != selectedDate) {
+                              localPickerDate = picked;
+                            }
+                          })),
+                  Row(
+                    children: [
+                      CupertinoActionSheet(
+                        actions: <CupertinoActionSheetAction>[
+                          CupertinoActionSheetAction(
+                            child: const Text('Aceptar'),
+                            onPressed: () {
+                              setState(() {
+                                selectedDate = localPickerDate;
+                                this.currentMonth = selectedDate.month;
+                                this.currentYear = selectedDate.year;
+                                this.currentDay = selectedDate.day;
+                                checkForLocalStorageExistence(
+                                    selectedDate.year,
+                                    selectedDate.month,
+                                    selectedDate.day,
+                                    "old",
+                                    true,
+                                    false);
+                              });
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              )));
+    } else {
+      final DateTime picked = await showDatePicker(
+        locale: const Locale("es", "ES"),
+        context: context,
+        initialDate: selectedDate, // Refer step 1
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2025),
+      );
+      if (picked != null && picked != selectedDate)
+        setState(() {
+          selectedDate = picked;
+          this.currentMonth = selectedDate.month;
+          this.currentYear = selectedDate.year;
+          this.currentDay = selectedDate.day;
+          checkForLocalStorageExistence(selectedDate.year, selectedDate.month,
+              selectedDate.day, "old", true, false);
+        });
+    }
+  }
 
   checkForLocalStorageExistence(year, month, day, time, setCurrentTime, showLoading) async{
 
